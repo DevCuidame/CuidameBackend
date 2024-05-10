@@ -4,3 +4,5 @@ wwebjs_auth
 wwebjs_cache
 
 uploads
+
+.env

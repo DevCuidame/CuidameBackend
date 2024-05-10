@@ -1,5 +1,4 @@
 const Pet = require("../../models/pets/pet");
-const Auth = require("../../models/authentication");
 const fs = require("fs/promises");
 
 // ------------------------------ PETS ----------------------------------

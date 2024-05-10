@@ -749,7 +749,7 @@ User.findByCod = (cod) => {
         tipoid as "Tipo de identificación",
         numeroid as "Número de identificación",
         telefono as "telefono",
-        fecha_nacimiento as "fechaNacimiento",
+        fecha_nacimiento as "fecha_nacimiento",
         genero as "genero",
         direccion as "direccion",
         ciudad,
@@ -932,7 +932,7 @@ User.findMedById = (id_paciente) => {
     SELECT 
         medicamento,
         laboratorio,
-        formula AS "Dosis"
+        formula
     FROM 
         medicamentos 
     WHERE 

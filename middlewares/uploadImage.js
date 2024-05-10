@@ -17,6 +17,7 @@ const configureMulter = (uploadDirectory, prefix) => {
   });
 };
 
+
 // Configuración para la carga de archivos de perfil de mascotas
 const petUploadDirectory = '/home/developer/uploads/pets/profile';
 const petUploadPrefix = 'PET';
@@ -33,4 +34,4 @@ const vaccineUploadDirectory = '/home/developer/uploads/pets/vaccine';
 const vaccineUploadPrefix = 'VAC';
 const vaccineUpload = configureMulter(vaccineUploadDirectory, vaccineUploadPrefix);
 
-module.exports = { profileUpload, vaccineUpload, petUpload };
+module.exports = { profileUpload, vaccineUpload, petUpload, configureMulter };

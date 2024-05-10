@@ -971,21 +971,15 @@ module.exports = {
         const medL = med.length;
         const alergiasL = alergias.length;
         var data = [...med, ...alergias, medL, alergiasL];
+        console.log(data)
       }
 
       if (ref == "vacunas") {
         var data = await User.findVacunasById(idPaciente);
       }
 
-      if (!data || data.length == 0) {
-        return res.status(401).json({
-          success: true,
-          message: "notFound",
-        });
-      }
-
-      if (data.length == 0) {
-        return res.status(401).json({
+      if (!data) {
+        return res.status(404).json({
           success: true,
           message: "notFound",
         });
@@ -1016,7 +1010,7 @@ module.exports = {
       const form = Info.form;
 
       if (form == 1) {
-        // console.log("Form Updated", Info);
+        console.log("Form Updated", Info);
         await User.updatePaciente(Info);
         return res.status(201).json({
           success: true,

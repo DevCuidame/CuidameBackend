@@ -9,11 +9,10 @@ const passport = require("passport");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const Keys = require("./config/keys");
-const multer = require("multer");
 const path = require("path");
-const sharp = require("sharp");
 const upload = require('./middlewares/upload');
 const uploadVaccine = require('./middlewares/uploadVaccine');
+const vetRoutes = require('./routes/providers/provider.routes')
 
 const bodyParser = require("body-parser");
 
@@ -28,6 +27,7 @@ app.use(express.json());
  * RUTAS
  */
 const users = require("./routes/usersRoutes");
+const routerApi = require("./routes/index");
 // const wp = require('./whats-app/whatsapp');
 
 // if(process.env.NODE_ENV !== 'production')
@@ -60,6 +60,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use('/home/developer/uploads/pets/', express.static('/home/developer/uploads/pets/'));
 app.use('/home/developer/uploads/person/', express.static('/home/developer/uploads/person/'));
+app.use('/home/developer/uploads/resources/', express.static('/home/developer/uploads/resources/'));
 const staticFolderPath = path.join(__dirname, 'uploads/pets/');
 const staticFolderResourcesPath = path.join(__dirname, 'uploads/resources/');
 const staticFolderPathPerson = path.join(__dirname, 'uploads/person/');
@@ -75,6 +76,8 @@ app.set("port", port); //Confiturar puerto
 
 //Llamandoa las rutas
 users(app, upload, uploadVaccine);
+routerApi(app);
+
 
 // server.listen(3000,'10.14.50.181' || 'localhost', function(){
 server.listen(app.get("port"), function () {
