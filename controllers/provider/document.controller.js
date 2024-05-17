@@ -6,6 +6,9 @@ const PdfHandler = require("../../utils/pdfHandler");
 exports.createDocument = async (req, res) => {
   try {
     const privateDoc = 'PDF_' + Date.now() + "." + req.privName.split('.')[1];
+
+    
+
     const doc = await service.createDocument(req.body);
     res.json(doc);
   } catch (error) {

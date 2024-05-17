@@ -1,9 +1,8 @@
 class ServiceModel {
-    constructor(id, name, providerId, active) {
+    constructor(id, name) {
       this.id = id || null;
-      this.providerId = providerId;
       this.name = name;
-      this.active = active;
     }
   }
   
+ 

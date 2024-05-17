@@ -1,8 +1,8 @@
-const service = require("../../services/provider.service");
+const Service = require("../../services/service.service");
 
 exports.createService = async (req, res) => {
   try {
-    const newService = await service.createService(req.body);
+    const newService = await Service.createService(req.body);
     res.json(newService);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -11,7 +11,7 @@ exports.createService = async (req, res) => {
 
 exports.getService = async (req, res) => {
   try {
-    const service = await service.getService(req.params.id);
+    const service = await Service.getService(req.params.id);
 
     if (!service) {
       res.status(404).json({ error: 'Service not found' });
@@ -24,9 +24,25 @@ exports.getService = async (req, res) => {
   }
 };
 
+exports.getAllServices = async (req, res) => {
+  try {
+    const service = await Service.getAllServices();
+
+    if (!service) {
+      res.status(404).json({ error: 'Services not found' });
+      return;
+    }
+
+    res.status(200).json(service);
+  } catch (error) {
+    console.log("🚀 ~ exports.getAllServices= ~ error:", error)
+    res.status(400).json({ error: error.message });
+  }
+};
+
 exports.updateService = async (req, res) => {
   try {
-    const updatedService = await service.updateService(
+    const updatedService = await Service.updateService(
       req.params.id,
       req.body
     );
@@ -40,7 +56,7 @@ exports.deleteService = async (req, res) => {
   try {
     await service.deleteService(req.params.id);
 
-    const service = await service.getService(req.params.id);
+    const service = await Service.getService(req.params.id);
     if (!service) {
       res.status(404).json({ error: 'Service not found' });
       return;

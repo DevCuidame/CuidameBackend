@@ -1,6 +1,5 @@
 const fs = require('fs');
 
-
     async function buildPdf(dir, folder, base64) {
         try {
             const decoding = base64.replace(/^data:application\/pdf;base64,/, '');

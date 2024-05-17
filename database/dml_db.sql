@@ -11,6 +11,7 @@ UPDATE codes SET license = 'Health' WHERE code IN ('8WCBMB6TPD0DOH7O', 'NE2P33A9
 ALTER TABLE	codes ALTER COLUMN license SET NOT NULL;
 
 UPDATE codes SET license = 'Pets' WHERE code IN ( 'C46IL3G2PI6XBLWG');
+UPDATE pacientes SET code = 'Pets' WHERE id = 9;
 
 -- -------------------------------- --------------------------------------------------------
 CREATE TABLE departments ( id BIGSERIAL PRIMARY KEY NOT NULL, name VARCHAR(255) NOT NULL, code integer NOT NULL );
@@ -361,15 +362,58 @@ ALTER TABLE mascotas ADD COLUMN castrated BOOLEAN;
 
 CREATE TABLE IF NOT EXISTS services (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    status BOOLEAN NOT NULL
+    name VARCHAR(255) NOT NULL
+);
+
+INSERT INTO services (name) VALUES 
+('Consulta de Médico Veterinario Virtual'),
+('Consulta de Médico Veterinario Domiciliario'),
+('Vacunación y Desparazitación'),
+('Asesoria de Viajes Internacionales'),
+('Consulta de Médico Veterinario Consultorio'),
+('Procedimientos Quirúrgicos'),
+('Laboratorio'),
+('Esterilización'),
+('Hospitalización'),
+('Medicamentos y/o farmacia'),
+('Servicios funebres (Incluido traslado)');
+
+
+CREATE TABLE IF NOT EXISTS provider_services (
+    id SERIAL PRIMARY KEY,
+    provider_id INT NOT NULL,
+    service_id INT NOT NULL,
+    status BOOLEAN NOT NULL,
+    FOREIGN KEY (provider_id) REFERENCES provider(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (service_id) REFERENCES services(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS documents (
     id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(id),
+    provider_id INT NOT NULL,
+    pubName VARCHAR(255) NOT NULL,
+    privName VARCHAR(255) NOT NULL,
+    file_bs64 TEXT NOT NULL,
+    FOREIGN KEY (provider_id) REFERENCES provider(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS establishment (
+    id SERIAL PRIMARY KEY,
+    provider_id INT NOT NULL,
+    own BOOLEAN NOT NULL,
     name VARCHAR(255) NOT NULL,
-    document_url TEXT NOT NULL
+    FOREIGN KEY (provider_id) REFERENCES provider(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS legal_representative (
+    id SERIAL PRIMARY KEY,
+    provider_id INT NOT NULL,
+    identification_type VARCHAR(255) NOT NULL,
+    identification_number VARCHAR(255) NOT NULL,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    FOREIGN KEY (provider_id) REFERENCES provider(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 
@@ -491,3 +535,25 @@ SELECT m.id, m.hashcode, m.nombre AS nombre_mascota,  u.name AS nombre_dueño, u
 
 
 UPDATE codes SET agreement = 'H&H' WHERE code IN ('NFdBSllRUEtRRFpSWlhSUA', 'NEJVNkQxOTRURVdKOUdYRw');
+
+
+
+
+
+CREATE TABLE provider (
+    id SERIAL PRIMARY KEY,
+    provider_type VARCHAR(255) NOT NULL,
+    identification_type VARCHAR(255) NOT NULL,
+    identification_number VARCHAR(255) NOT NULL,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    city BIGINT NOT NULL,
+    department VARCHAR(255),
+    photo_bs64 TEXT,
+    pub_photo VARCHAR(255),
+    priv_photo VARCHAR(255),
+    status BOOLEAN NOT NULL,
+    FOREIGN KEY (city) REFERENCES townships(id) ON UPDATE CASCADE ON DELETE CASCADE
+);

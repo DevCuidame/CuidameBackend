@@ -8,6 +8,10 @@ exports.getService = async (id) => {
   return serviceRepository.getService(id);
 };
 
+exports.getAllServices = async () => {
+  return serviceRepository.getAllServices();
+};
+
 exports.updateService = async (id, name, providerId, active) => {
   return serviceRepository.updateService(id, name, providerId, active);
 };
