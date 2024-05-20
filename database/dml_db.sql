@@ -402,7 +402,7 @@ CREATE TABLE IF NOT EXISTS establishment (
     id SERIAL PRIMARY KEY,
     provider_id INT NOT NULL,
     own BOOLEAN NOT NULL,
-    name VARCHAR(255) NOT NULL,
+    full_name VARCHAR(255) NOT NULL,
     FOREIGN KEY (provider_id) REFERENCES provider(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 

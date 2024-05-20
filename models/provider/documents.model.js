@@ -1,11 +1,9 @@
 class DocumentModel {
-  constructor(id, provider_id, own, establishment_name, pubName, privName, base64) {
+  constructor(id, provider_id, pub_name, priv_name, file_bs64) {
     this.id = id || null;
     this.provider_id = provider_id;
-    this.own = own;
-    this.establishment_name = establishment_name;
-    this.pubName = pubName;
-    this.privName = privName;
-    this.base64 = base64;
+    this.pub_name = pub_name;
+    this.priv_name = priv_name;
+    this.file_bs64 = file_bs64;
   }
 }

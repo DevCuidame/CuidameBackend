@@ -1,13 +1,20 @@
 const Service = require("../../services/service.service");
 
 exports.createService = async (req, res) => {
+  const services = req.body;
+
+  if (!Array.isArray(services)) {
+    return res.status(400).json({ error: 'El cuerpo de la solicitud debe ser un arreglo.' });
+  }
+
   try {
-    const newService = await Service.createService(req.body);
-    res.json(newService);
+    const createdServices = await Promise.all(services.map(service => Service.createService(service.provider_id, service.service_id, service.status)));
+    res.json({ message: "!Servicios cargados correctamente!", createdServices, success: true });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({message: "Ha ocurrido un error al cargar los servicios.", error: error.message, success: false });
   }
 };
+
 
 exports.getService = async (req, res) => {
   try {
