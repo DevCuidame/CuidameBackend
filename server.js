@@ -20,14 +20,12 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(express.json());
-
-
-
 /*
  * RUTAS
  */
 const users = require("./routes/usersRoutes");
 const routerApi = require("./routes/index");
+const { getEventTypes, createEventInvitee } = require("./utils/calendly/calendly");
 // const wp = require('./whats-app/whatsapp');
 
 // if(process.env.NODE_ENV !== 'production')

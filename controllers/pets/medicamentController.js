@@ -82,9 +82,11 @@ async function updateMedicament(req, res, next) {
 async function deleteMedicament(req, res, next) {
   try {
     const id = req.body.id;
-    const result = await Medicament.delete(id);
+    const result = await Medicament.readById(id);
 
     if (result) {
+      await Medicament.delete(id);
+
       return res
         .status(200)
         .json({ message: "Medicamento eliminado con éxito" });

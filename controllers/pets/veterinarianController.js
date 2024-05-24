@@ -63,7 +63,17 @@ async function getOneVeterinarian(req, res, next) {
 async function addVeterinarian(req, res, next) {
   try {
     const info = req.body;
-    console.log(info);
+    console.log("🚀 ~ addVeterinarian ~ info:", info)
+
+    const exists = await Veterinarian.haveOne(info.pet_id);
+
+    if (exists) {
+      return res.status(400).json({
+        success: true,
+        message: "Solo puedes guardar un veterinario.",
+      });
+    }
+
     await Veterinarian.add(info);
 
     return res.status(201).json({
@@ -113,8 +123,13 @@ async function updateVeterinarian(req, res, next) {
 async function deleteVeterinarian(req, res, next) {
   try {
     const id = req.body.id;
-    await Veterinarian.delete(id);
+    const result = await Veterinarian.readById(id);
 
+    if (!result) {
+      return res.status(404).json({ message: "Veterinario no encontrado" });
+    }
+
+    await Veterinarian.delete(id);
     return res.status(200).json({ message: "Veterinario eliminado con éxito" });
   } catch (error) {
     console.error(error);

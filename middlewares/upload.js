@@ -5,7 +5,7 @@ const localDirectory = './uploads/pets/profile'
 
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
-    callback(null, uploadDirectory);
+    callback(null, localDirectory);
   },
   filename: (req, file, callback) => {
     const ext = file.originalname.split('.').pop();

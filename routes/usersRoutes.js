@@ -212,7 +212,7 @@ module.exports = (app, upload, uploadVaccine) => {
     diseaseConditionController.deleteDiseaseCondition
   );
 
-  // ---------------------------- MEDICAMENT ROUTES ------------------------------------
+  // ---------------------------- TREATMENT ROUTES ------------------------------------
 
   app.post(
     "/api/treatment/all",

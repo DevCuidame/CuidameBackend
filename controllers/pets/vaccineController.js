@@ -107,7 +107,7 @@ async function updateVaccine(req, res, next) {
 async function deleteVaccine(req, res, next) {
   try {
     const id = req.body.id;
-    const vac = await Vaccine.getOneVaccine(id);
+    const vac = await Vaccine.readById(id);
     try {
       await fs.unlink(vac.photourl);
     } catch (error) {

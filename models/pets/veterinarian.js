@@ -111,7 +111,6 @@ Veterinarian.getWellnessSpa = () => {
   return db.manyOrNone(sql);
 };
 
-
 Veterinarian.database = () => {
   const sql = `
   SELECT 
@@ -121,9 +120,9 @@ Veterinarian.database = () => {
   veterinarians as u
   INNER JOIN townships AS t ON u.city_id = t.id
   INNER JOIN departments AS d ON t.department_id = d.id`;
-  
+
   return db.manyOrNone(sql);
-}
+};
 Veterinarian.readById = (id) => {
   const sql = `
     SELECT 
@@ -147,6 +146,17 @@ Veterinarian.delete = (id) => {
       WHERE 
           id = $1
           `;
+
+  return db.oneOrNone(sql, id);
+};
+
+Veterinarian.haveOne = (id) => {
+  const sql = `
+    SELECT 
+          *
+    FROM petsVeterinarian
+    WHERE 
+    pet_id = $1`;
 
   return db.oneOrNone(sql, id);
 };
