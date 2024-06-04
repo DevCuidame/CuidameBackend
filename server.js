@@ -14,7 +14,7 @@ const path = require("path");
 const sharp = require("sharp");
 const upload = require('./middlewares/upload');
 const uploadVaccine = require('./middlewares/uploadVaccine');
-
+const bookingModule = require('./NodeJS-Booking-App')
 const bodyParser = require("body-parser");
 
 // Configurar el análisis de cuerpo extendido para admitir datos JSON y formularios URL-encoded
@@ -28,6 +28,8 @@ app.use(express.json());
  * RUTAS
  */
 const users = require("./routes/usersRoutes");
+const diagnostics = require("./routes/diagnosticRoutes");
+
 // const wp = require('./whats-app/whatsapp');
 
 // if(process.env.NODE_ENV !== 'production')
@@ -73,8 +75,11 @@ app.disable("x-powered-by");
 
 app.set("port", port); //Confiturar puerto
 
-//Llamandoa las rutas
+//Llamando a las rutas
 users(app, upload, uploadVaccine);
+diagnostics(app);
+app.use(bookingModule.app);
+
 
 // server.listen(3000,'10.14.50.181' || 'localhost', function(){
 server.listen(app.get("port"), function () {

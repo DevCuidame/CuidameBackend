@@ -318,6 +318,7 @@ module.exports = {
   getAllPersons,
   uploadPersonImg,
   getHascode,
+  
 
   async forgotPassword(req, res) {
     try {

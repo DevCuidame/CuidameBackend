@@ -241,6 +241,29 @@ CREATE TABLE IF NOT EXISTS vacunas
     CONSTRAINT vacunas_pkey PRIMARY KEY (id)
 );
 
+
+CREATE TABLE IF NOT EXISTS diagnositicos
+(
+    id SERIAL,
+    id_paciente bigint NOT NULL,
+    nombre character varying(100),
+    fecha date,
+    hora time NOT NULL,
+    dato DOUBLE PRECISION NOT NULL,
+    FOREIGN KEY (id_paciente) REFERENCES pacientes(id),
+    CONSTRAINT id PRIMARY KEY (id)
+);
+
+---------------------------------------------------------------ALTER TABLE-----------------------------------------------------------------
+
+ALTER TABLE IF EXISTS diagnositicos
+    ADD CONSTRAINT diagnositico_id_paciente_fkey FOREIGN KEY (id_paciente)
+    REFERENCES pacientes (id) MATCH SIMPLE
+    ON UPDATE CASCADE
+    ON DELETE CASCADE;
+
+
+
 ALTER TABLE IF EXISTS alergias
     ADD CONSTRAINT alergias_id_paciente_fkey FOREIGN KEY (id_paciente)
     REFERENCES pacientes (id) MATCH SIMPLE
