@@ -93,15 +93,17 @@ const sendPetNotification = async (req, res) => {
     const mensajeEspanol = objeto
       ? `${data.name}, tú código QR ha sido escaneado en tu objeto: ${objeto}.`
       : mascota
-      ? `${data.name}, tú código QR en tu mascota, ${mascota}, ha sido escaneado!`
+      ? `${data.name}, el código QR de tu mascota, *${mascota}*, ha sido escaneado!`
       : `${data.name}, el código QR ha sido escaneado.`;
 
     const locationUrl = `https://maps.google.com/?q=${latitude},${longitude}`;
-    const mensaje = `${mensajeEspanol} Toca para mirar la ubicación: ${locationUrl}`;
+    const mensaje = `${mensajeEspanol} Toca para mirar la ubicación`;
 
-    for (let telefono of contacts) {
+    let telefonos = Object.values(contacts);
+
+    for (let telefono of telefonos) {
       if (telefono) {
-        await sendMessage(`57${telefono}`, mensaje);
+        await sendMessage(`57${telefono}`, mensaje, locationUrl);
       }
     }
 
