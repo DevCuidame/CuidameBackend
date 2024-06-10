@@ -49,7 +49,6 @@ async function getOwner(req, res, next) {
   try {
     const id = req.body.id;
     const owner = await Pet.getOwner(id);
-    //console.log(id, owner);
     return res.status(201).json(owner);
   } catch (error) {
     return res.status(501).json({

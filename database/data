@@ -1,0 +1,222 @@
+SELECT 
+    p.nombre AS Nombre,
+    p.apellido AS Apellido,
+    p.tipoid AS TipodeDocumento,
+    p.numeroid AS NúmerodeDocumento,
+    p.telefono AS Teléfono,
+    p.genero AS Género,
+    p.rh AS RH,
+    p.eps AS EPS,
+    p.prepagada AS Prepagada,
+    p.fecha_nacimiento AS FechadeNacimiento,
+    p.seguro_funerario AS SeguroFunerario,
+    pv.vacuna_nombre AS Vacuna,
+    pm.medicamento_nombre AS Medicamento,
+    pe.enfermedad_nombre AS Enfermedad,
+    paf.antecedente_familiar_nombre AS AntecedenteFamiliar,
+    pap.antecedente_personal_nombre AS AntecedentePersonal,
+    pa.alergia_nombre AS Alergia
+FROM 
+    pacientes p
+LEFT JOIN 
+    vacunas pv ON pv.id_paciente = p.id
+LEFT JOIN 
+    medicamentos pm ON pm.id_paciente = p.id
+LEFT JOIN 
+    enfermedades pe ON pe.id_paciente = p.id
+LEFT JOIN 
+    antecedentes_familiares paf ON paf.id_paciente = p.id
+LEFT JOIN 
+    antecedentes pap ON pap.id_paciente = p.id
+LEFT JOIN 
+    alergias pa ON pa.id_paciente = p.id;
+
+
+SELECT 
+    p.nombre AS Nombre,
+    p.apellido AS Apellido,
+    p.tipoid AS TipodeDocumento,
+    p.numeroid AS NúmerodeDocumento,
+    p.telefono AS Teléfono,
+    p.genero AS Género,
+    p.rh AS RH,
+    p.eps AS EPS,
+    p.prepagada AS Prepagada,
+    p.fecha_nacimiento AS FechadeNacimiento,
+    p.seguro_funerario AS SeguroFunerario,
+    (SELECT json_agg(row_to_json(pv)) FROM vacunas pv WHERE pv.id_paciente = p.id) AS vacunas,
+    (SELECT json_agg(row_to_json(pm)) FROM medicamentos pm WHERE pm.id_paciente = p.id) AS medicamentos,
+    (SELECT json_agg(row_to_json(pe)) FROM enfermedades pe WHERE pe.id_paciente = p.id) AS enfermedades,
+    (SELECT json_agg(row_to_json(paf)) FROM atecedentes_familiares paf WHERE paf.id_paciente = p.id) AS antecedentes_familiares,
+    (SELECT json_agg(row_to_json(pap)) FROM antecedentes pap WHERE pap.id_paciente = p.id) AS antecedentes_personales,
+    (SELECT json_agg(row_to_json(pa)) FROM alergias pa WHERE pa.id_paciente = p.id) AS alergias
+FROM 
+    pacientes p
+
+
+
+WITH vacunas_agg AS (
+    SELECT 
+        p.id AS paciente_id,
+        array_agg(DISTINCT pv.vacuna) AS vacunas
+    FROM 
+        pacientes p
+    LEFT JOIN 
+        vacunas pv ON pv.id_paciente = p.id
+    GROUP BY 
+        p.id
+),
+condiciones_agg AS (
+    SELECT 
+        p.id AS paciente_id,
+        json_agg(json_build_object(
+            'discapacidad', sub.discapacidad, 
+            'embarazada', sub.embarazada, 
+            'cicatrices_descripcion', sub.cicatrices_descripcion, 
+            'tatuajes_descripcion', sub.tatuajes_descripcion
+        )) AS condiciones
+    FROM 
+        pacientes p
+    LEFT JOIN (
+        SELECT DISTINCT ON (co.id_paciente, co.discapacidad, co.embarazada, co.cicatrices_descripcion, co.tatuajes_descripcion) 
+            co.id_paciente, 
+            co.discapacidad, 
+            co.embarazada, 
+            co.cicatrices_descripcion, 
+            co.tatuajes_descripcion
+        FROM 
+            condicion co
+    ) sub ON sub.id_paciente = p.id
+    GROUP BY 
+        p.id
+),
+medicamentos_agg AS (
+    SELECT 
+        p.id AS paciente_id,
+        json_agg(json_build_object(
+            'medicamento', sub.medicamento, 
+            'formula', sub.formula
+        )) AS medicamentos
+    FROM 
+        pacientes p
+    LEFT JOIN (
+        SELECT DISTINCT ON (pm.id_paciente, pm.medicamento, pm.formula) 
+            pm.id_paciente, 
+            pm.medicamento, 
+            pm.formula
+        FROM 
+            medicamentos pm
+    ) sub ON sub.id_paciente = p.id
+    GROUP BY 
+        p.id
+),
+enfermedades_agg AS (
+    SELECT 
+        p.id AS paciente_id,
+        array_agg(DISTINCT pe.enfermedad) AS enfermedades
+    FROM 
+        pacientes p
+    LEFT JOIN 
+        enfermedades pe ON pe.id_paciente = p.id
+    GROUP BY 
+        p.id
+),
+antecedentes_familiares_agg AS (
+    SELECT 
+        p.id AS paciente_id,
+        json_agg(json_build_object(
+            'tipo_antecedente', sub.tipo_antecedente, 
+            'parentesco', sub.parentesco, 
+            'descripcion_antecedente', sub.descripcion_antecedente
+        )) AS antecedentes_familiares
+    FROM 
+        pacientes p
+    LEFT JOIN (
+        SELECT DISTINCT ON (paf.id_paciente, paf.tipo_antecedente, paf.parentesco, paf.descripcion_antecedente) 
+            paf.id_paciente, 
+            paf.tipo_antecedente, 
+            paf.parentesco, 
+            paf.descripcion_antecedente
+        FROM 
+            atecedentes_familiares paf
+    ) sub ON sub.id_paciente = p.id
+    GROUP BY 
+        p.id
+),
+antecedentes_personales_agg AS (
+    SELECT 
+        p.id AS paciente_id,
+        json_agg(json_build_object(
+            'tipo_antecedente', sub.tipo_antecedente, 
+            'descripcion', sub.descripcion_antecedente, 
+            'fecha_antecedente', sub.fecha_antecedente
+        )) AS antecedentes_personales
+    FROM 
+        pacientes p
+    LEFT JOIN (
+        SELECT DISTINCT ON (pap.id_paciente, pap.tipo_antecedente, pap.descripcion_antecedente, pap.fecha_antecedente) 
+            pap.id_paciente, 
+            pap.tipo_antecedente, 
+            pap.descripcion_antecedente, 
+            pap.fecha_antecedente
+        FROM 
+            antecedentes pap
+    ) sub ON sub.id_paciente = p.id
+    GROUP BY 
+        p.id
+),
+alergias_agg AS (
+    SELECT 
+        p.id AS paciente_id,
+        json_agg(json_build_object(
+            'tipo_alergia', sub.tipo_alergia, 
+            'descripcion', sub.descripcion
+        )) AS alergias
+    FROM 
+        pacientes p
+    LEFT JOIN (
+        SELECT DISTINCT ON (pa.id_paciente, pa.tipo_alergia, pa.descripcion) 
+            pa.id_paciente, 
+            pa.tipo_alergia, 
+            pa.descripcion
+        FROM 
+            alergias pa
+    ) sub ON sub.id_paciente = p.id
+    GROUP BY 
+        p.id
+)
+SELECT 
+    p.nombre AS Nombre,
+    p.apellido AS Apellido,
+    p.tipoid AS TipodeDocumento,
+    p.numeroid AS NúmerodeDocumento,
+    p.telefono AS Teléfono,
+    p.genero AS Género,
+    p.rh AS RH,
+    p.eps AS EPS,
+    p.prepagada AS Prepagada,
+    p.fecha_nacimiento AS FechadeNacimiento,
+    p.seguro_funerario AS SeguroFunerario,
+    va.vacunas,
+    ca.condiciones,
+    ma.medicamentos,
+    ea.enfermedades,
+    afa.antecedentes_familiares,
+    apa.antecedentes_personales,
+    ala.alergias
+FROM 
+    pacientes p
+LEFT JOIN 
+    vacunas_agg va ON va.paciente_id = p.id
+LEFT JOIN 
+    condiciones_agg ca ON ca.paciente_id = p.id
+LEFT JOIN 
+    medicamentos_agg ma ON ma.paciente_id = p.id
+LEFT JOIN 
+    enfermedades_agg ea ON ea.paciente_id = p.id
+LEFT JOIN 
+    antecedentes_familiares_agg afa ON afa.paciente_id = p.id
+LEFT JOIN 
+    antecedentes_personales_agg apa ON apa.paciente_id = p.id
+LEFT JOIN 
+    alergias_agg ala ON ala.paciente_id = p.id;
