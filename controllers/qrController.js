@@ -1,7 +1,7 @@
 const QR = require("../models/qr");
 const axios = require("axios");
 const cheerio = require("cheerio");
-const { client, readyPromise } = require("../whats-app/whatsapp");
+// const { client, readyPromise } = require("../whats-app/whatsapp");
 
 // const client = require("../whats-app/whatsapp");
 const e = require("express");
@@ -76,150 +76,150 @@ module.exports = {
     }
   },
 
-  async sendNotification(req, res, next) {
-    const code_request = req.query.code_request;
-    const latitude = req.query.latitude;
-    const longitude = req.query.longitude;
-    const objeto = req.query.objeto;
-    const mascota = req.query.mascota;
-    const data =  await QR.getByCode(code_request);
+//   async sendNotification(req, res, next) {
+//     const code_request = req.query.code_request;
+//     const latitude = req.query.latitude;
+//     const longitude = req.query.longitude;
+//     const objeto = req.query.objeto;
+//     const mascota = req.query.mascota;
+//     const data =  await QR.getByCode(code_request);
     
 
-    let contacts;
-    if (data) {
+//     let contacts;
+//     if (data) {
       
-      contacts = await QR.findContacts(data.id);
+//       contacts = await QR.findContacts(data.id);
 
-      let mensajeEspanol = "";
-      let mensajeIngles = "";
-      console.log("objeto", objeto);
-      if (objeto != "") {
-        mensajeEspanol = `${data.name}, tú código QR ha sido escaneado en tu objeto: ${objeto}.`;
-      } else if (mascota != "") {
-        mensajeEspanol = `${data.name}, tú código QR en tu mascota, ${mascota} ha sido escaneado!`;
-      } else {
-        mensajeEspanol = `${data.name}, el código QR ha sido escaneado`;
-        mensajeIngles = `${data.name}, the QR code has been scanned`;
-      }
+//       let mensajeEspanol = "";
+//       let mensajeIngles = "";
+//       console.log("objeto", objeto);
+//       if (objeto != "") {
+//         mensajeEspanol = `${data.name}, tú código QR ha sido escaneado en tu objeto: ${objeto}.`;
+//       } else if (mascota != "") {
+//         mensajeEspanol = `${data.name}, tú código QR en tu mascota, ${mascota} ha sido escaneado!`;
+//       } else {
+//         mensajeEspanol = `${data.name}, el código QR ha sido escaneado`;
+//         mensajeIngles = `${data.name}, the QR code has been scanned`;
+//       }
 
-      let telefonos = Object.values(contacts);
-      console.log(telefonos);
+//       let telefonos = Object.values(contacts);
+//       console.log(telefonos);
 
-      //NOTIFICACIONES POR WHATSAPPPPOP
+//       //NOTIFICACIONES POR WHATSAPPPPOP
 
-      for (let i = 0; i < telefonos.length; i++) {
-        if (telefonos[i] != null && telefonos[i] != "") {
-          try {
-            client.sendMessage(
-              `57${telefonos[i]}@c.us`,
-              `${mensajeEspanol}. Toca para mirar la ubicación:
-https://maps.google.com/?q=${latitude},${longitude}`
-            );
-          } catch (e) {
-            console.log("Error mandando mensaje whatsapp");
-          }
-        }
-      }
+//       for (let i = 0; i < telefonos.length; i++) {
+//         if (telefonos[i] != null && telefonos[i] != "") {
+//           try {
+//             client.sendMessage(
+//               `57${telefonos[i]}@c.us`,
+//               `${mensajeEspanol}. Toca para mirar la ubicación:
+// https://maps.google.com/?q=${latitude},${longitude}`
+//             );
+//           } catch (e) {
+//             console.log("Error mandando mensaje whatsapp");
+//           }
+//         }
+//       }
 
-      // const notification = {
-      //   app_id: "d972c946-2ec3-48b7-bf2b-cc89f84320db",
-      //   data: { userId: "PostMan1234" },
-      //   contents: {
-      //     en: `${mensajeIngles}. Tap to see location`,
-      //     es: `${mensajeEspanol}. Toca para mirar la ubicación`,
-      //   },
-      //   heading: { en: "Alerta", es: "Este es el título" },
-      //   include_player_ids: [`${data.notificationid}`],
-      //   url: `https://maps.google.com/?q=${latitude},${longitude}`,
-      // };
+//       // const notification = {
+//       //   app_id: "d972c946-2ec3-48b7-bf2b-cc89f84320db",
+//       //   data: { userId: "PostMan1234" },
+//       //   contents: {
+//       //     en: `${mensajeIngles}. Tap to see location`,
+//       //     es: `${mensajeEspanol}. Toca para mirar la ubicación`,
+//       //   },
+//       //   heading: { en: "Alerta", es: "Este es el título" },
+//       //   include_player_ids: [`${data.notificationid}`],
+//       //   url: `https://maps.google.com/?q=${latitude},${longitude}`,
+//       // };
 
-      // NOTIFICACION TODO: DESCOMENTAR
-      // axios
-      //   .post("https://onesignal.com/api/v1/notifications", notification, {
-      //     headers: {
-      //       "Content-type": "application/json",
-      //       Authorization:
-      //         "Basic MzliM2VmN2EtNDBjNy00ZjY1LTlhYmQtYjNjOTM5MTU0YThh",
-      //     },
-      //   })
-      //   .then((response) => console.log("response"))
-      //   .catch((error) =>
-      //     console.log("Axios error mandando notificacion android by onesignal")
-      //   );
+//       // NOTIFICACION TODO: DESCOMENTAR
+//       // axios
+//       //   .post("https://onesignal.com/api/v1/notifications", notification, {
+//       //     headers: {
+//       //       "Content-type": "application/json",
+//       //       Authorization:
+//       //         "Basic MzliM2VmN2EtNDBjNy00ZjY1LTlhYmQtYjNjOTM5MTU0YThh",
+//       //     },
+//       //   })
+//       //   .then((response) => console.log("response"))
+//       //   .catch((error) =>
+//       //     console.log("Axios error mandando notificacion android by onesignal")
+//       //   );
 
-      return res.status(201).json({
-        message: "Se ha identificado el código",
-        success: true,
-        data: data,
-      });
-    } else {
-      return res.status(501).json({
-        message: "Hubo un error al enviar alguna notificacion",
-        success: false,
-      });
-    }
-  },
+//       return res.status(201).json({
+//         message: "Se ha identificado el código",
+//         success: true,
+//         data: data,
+//       });
+//     } else {
+//       return res.status(501).json({
+//         message: "Hubo un error al enviar alguna notificacion",
+//         success: false,
+//       });
+//     }
+//   },
 
-  async sendPetNotification(req, res, next) {
-    const code_request = req.query.code_request;
-    const latitude = req.query.latitude;
-    const longitude = req.query.longitude;
-    const objeto = req.query.objeto;
-    const mascota = req.query.mascota;
-    const data = await QR.findPetByCode(code_request);
+//   async sendPetNotification(req, res, next) {
+//     const code_request = req.query.code_request;
+//     const latitude = req.query.latitude;
+//     const longitude = req.query.longitude;
+//     const objeto = req.query.objeto;
+//     const mascota = req.query.mascota;
+//     const data = await QR.findPetByCode(code_request);
 
-    try {
-      let contacts;
-      if (data) {
-        contacts = await QR.findUserContact(data.id);
-        // console.log("contacts", contacts);
-        let mensajeEspanol = "";
-        let mensajeIngles = "";
-        // console.log("objeto", objeto);
-        if (objeto != "") {
-          mensajeEspanol = `${data.name}, tú código QR ha sido escaneado en tu objeto: ${objeto}.`;
-        } else if (mascota != "") {
-          mensajeEspanol = `${data.name}, tú código QR en tu mascota, ${mascota} ha sido escaneado!`;
-        } else {
-          mensajeEspanol = `${data.name}, el código QR ha sido escaneado`;
-          mensajeIngles = `${data.name}, the QR code has been scanned`;
-        }
+//     try {
+//       let contacts;
+//       if (data) {
+//         contacts = await QR.findUserContact(data.id);
+//         // console.log("contacts", contacts);
+//         let mensajeEspanol = "";
+//         let mensajeIngles = "";
+//         // console.log("objeto", objeto);
+//         if (objeto != "") {
+//           mensajeEspanol = `${data.name}, tú código QR ha sido escaneado en tu objeto: ${objeto}.`;
+//         } else if (mascota != "") {
+//           mensajeEspanol = `${data.name}, tú código QR en tu mascota, ${mascota} ha sido escaneado!`;
+//         } else {
+//           mensajeEspanol = `${data.name}, el código QR ha sido escaneado`;
+//           mensajeIngles = `${data.name}, the QR code has been scanned`;
+//         }
 
-        let telefonos = Object.values(contacts);
-        // console.log('CONTACTOS', telefonos);
+//         let telefonos = Object.values(contacts);
+//         // console.log('CONTACTOS', telefonos);
 
-        for (let i = 0; i < telefonos.length; i++) {
-          if (telefonos[i] != null && telefonos[i] != "") {
-            try {
-              await client.sendMessage(
-                `57${telefonos[i]}@c.us`,
-                `${mensajeEspanol}. Toca para mirar la ubicación:
-https://maps.google.com/?q=${latitude},${longitude}`
-              );
-            } catch (e) {
-              console.log("Error mandando mensaje whatsapp", e);
-            }
-          }
-        }
-        return res.status(201).json({
-          message: "Se ha identificado el código",
-          success: true,
-          data: data,
-        });
-      } else {
-        return res.status(501).json({
-          message: "Hubo un error al enviar alguna notificación",
-          success: false,
-        });
-      }
-    } catch (error) {
-      // console.log(error);
-      return res.status(501).json({
-        message: "Hubo un error en el servidor",
-        success: false,
-      });
-    }
-  },
+//         for (let i = 0; i < telefonos.length; i++) {
+//           if (telefonos[i] != null && telefonos[i] != "") {
+//             try {
+//               await client.sendMessage(
+//                 `57${telefonos[i]}@c.us`,
+//                 `${mensajeEspanol}. Toca para mirar la ubicación:
+// https://maps.google.com/?q=${latitude},${longitude}`
+//               );
+//             } catch (e) {
+//               console.log("Error mandando mensaje whatsapp", e);
+//             }
+//           }
+//         }
+//         return res.status(201).json({
+//           message: "Se ha identificado el código",
+//           success: true,
+//           data: data,
+//         });
+//       } else {
+//         return res.status(501).json({
+//           message: "Hubo un error al enviar alguna notificación",
+//           success: false,
+//         });
+//       }
+//     } catch (error) {
+//       // console.log(error);
+//       return res.status(501).json({
+//         message: "Hubo un error en el servidor",
+//         success: false,
+//       });
+//     }
+//   },
 
   async newCode(req, res, next) {
     try {

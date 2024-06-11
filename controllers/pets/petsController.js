@@ -94,6 +94,14 @@ async function addPet(req, res, next) {
   try {
     const petinfo = req.body;
     const { hashcode } = await Pet.getOneQr();
+
+    if (!hashcode) {
+      return res.status(400).json({
+        success: false,
+        message: "No hay códigos para tu mascota.",
+      });
+    }
+
     
     if (petinfo.hashcode === '' || petinfo.hashcode == null) petinfo.hashcode = hashcode;
 

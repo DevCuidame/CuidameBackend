@@ -12,7 +12,14 @@ const Keys = require("./config/keys");
 const path = require("path");
 const upload = require('./middlewares/upload');
 const uploadVaccine = require('./middlewares/uploadVaccine');
-const vetRoutes = require('./routes/providers/provider.routes')
+
+const xss = require('xss-clean');
+const helmet = require('helmet');
+const csrf = require('csurf');
+
+app.use(xss());
+app.use(helmet());
+// app.use(csrf({ cookie: true }));
 
 const bodyParser = require("body-parser");
 
