@@ -5,7 +5,7 @@ async function buildPdf(dir, folder, base64) {
     const decoding = base64.replace(/^data:application\/pdf;base64,/, "");
     const directoryPath = `./uploads/documents/${folder}/`;
 
-    await fs.promises.writeFile(`${directoryPath}${dir}.pdf`, decoding, {
+    await fs.promises.writeFile(`${directoryPath}${dir}`, decoding, {
       encoding: "base64",
     });
   } catch (error) {

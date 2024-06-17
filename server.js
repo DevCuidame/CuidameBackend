@@ -1,74 +1,51 @@
 require("dotenv").config();
-const express = require("express"); //Importar paquete
-const app = express(); //Inicializar nuestra app
-const http = require("http"); //Importar Http
-const server = http.createServer(app); //Crear servidorcoi
-const logger = require("morgan"); //Error handler
+const express = require("express");
+const http = require("http");
+const logger = require("morgan");
 const cors = require("cors");
 const passport = require("passport");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
-const Keys = require("./config/keys");
 const path = require("path");
-const upload = require('./middlewares/upload');
-const uploadVaccine = require('./middlewares/uploadVaccine');
-
+const bodyParser = require("body-parser");
 const xss = require('xss-clean');
 const helmet = require('helmet');
 const csrf = require('csurf');
-
-app.use(xss());
-app.use(helmet());
-// app.use(csrf({ cookie: true }));
-
-const bodyParser = require("body-parser");
-
-// Configurar el análisis de cuerpo extendido para admitir datos JSON y formularios URL-encoded
-app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
-app.use(express.json());
-/*
- * RUTAS
- */
+const Keys = require("./config/keys");
+const upload = require('./middlewares/upload');
+const uploadVaccine = require('./middlewares/uploadVaccine');
 const users = require("./routes/usersRoutes");
 const routerApi = require("./routes/index");
-const { getEventTypes, createEventInvitee } = require("./utils/calendly/calendly");
-// const wp = require('./whats-app/whatsapp');
 
-// if(process.env.NODE_ENV !== 'production')
+const app = express();
+const server = http.createServer(app);
+const port = process.env.PORT || 3000;
 
-const port = process.env.PORT || 3000; //Definir puerto que escucha nuestro servidor
-app.use(logger("dev")); //Logger para desarrollo para debugar erroes
-app.use(express.json());
-app.use(
-  express.urlencoded({
-    extended: true,
-  })
-);
+app.use(helmet());
+app.use(xss());
+
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(logger("dev"));
 
 const corsOptions = {
   origin: '*',
 };
-
 app.use(cors(corsOptions));
-
-
 
 app.use(cookieParser(Keys.secretOrKey));
 app.use(session({
-    secret: Keys.secretOrKey,
-    resave: false,
-    saveUninitialized: false
+  secret: Keys.secretOrKey,
+  resave: false,
+  saveUninitialized: false
 }));
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use('/home/developer/uploads/pets/', express.static('/home/developer/uploads/pets/'));
-app.use('/home/developer/uploads/person/', express.static('/home/developer/uploads/person/'));
-app.use('/home/developer/uploads/resources/', express.static('/home/developer/uploads/resources/'));
+
 const staticFolderPath = path.join(__dirname, 'uploads/pets/');
-const staticFolderResourcesPath = path.join(__dirname, 'uploads/resources/');
 const staticFolderPathPerson = path.join(__dirname, 'uploads/person/');
+const staticFolderResourcesPath = path.join(__dirname, 'uploads/resources/');
 app.use('/uploads/pets/', express.static(staticFolderPath));
 app.use('/uploads/person/', express.static(staticFolderPathPerson));
 app.use('/uploads/resources/', express.static(staticFolderResourcesPath));
@@ -77,24 +54,20 @@ require("./config/passport")(passport);
 
 app.disable("x-powered-by");
 
-app.set("port", port); //Confiturar puerto
+app.set("port", port);
 
-//Llamandoa las rutas
 users(app, upload, uploadVaccine);
 routerApi(app);
 
-
-// server.listen(3000,'10.14.50.181' || 'localhost', function(){
 server.listen(app.get("port"), function () {
-  console.log("Aplicacion de NodeJS " + port + " Iniciada...");
+  console.log(`Aplicacion de NodeJS ${port} Iniciada...`);
 });
 
 app.get("/", (req, res) => {
   res.send("Ruta raiz del backend para SMARTHEALTH");
 });
 
-//  ERROR HANDLER
 app.use((err, req, res, next) => {
-  console.log(err);
-  res.status(err.status || 500).send(err.stack);
+  console.error(err);
+  res.status(err.status || 500).send(err.message);
 });

@@ -7,6 +7,8 @@ const legalRepRouter = require('./providers/lega_rep.router');
 const establishmentRouter = require('./providers/establishment.router');
 const clinicsRouter = require('./veterinary_clinics/veterinary_clinics.routes');
 const whatsappRouter = require('./whatsapp/whatsapp.routes');
+const calendlyRoutes = require('../utils/calendly/calendly');
+const appointmentRouter = require('./appointment/appointment.routes');
 
 function routerApi(app) {
   const router = express.Router();
@@ -19,6 +21,9 @@ function routerApi(app) {
   router.use('/legalrep', legalRepRouter);
   router.use('/establishment', establishmentRouter);
   router.use('/auth', whatsappRouter);
+  router.use('/calendly', calendlyRoutes);
+  router.use('/appointments', appointmentRouter);
+
 }
 
 module.exports = routerApi;
