@@ -4,60 +4,82 @@ const userRoleService = require("../services/userRole.service");
 exports.createUserRole = async (req, res) => {
   try {
     const { user_id, role_id } = req.body;
+
+
+    const exists = await userRoleService.getUserRoleByUser(user_id, role_id);
+
+    if (exists) {
+      return res.status(400).json({
+        message: "El Usuario ya tiene el role",
+        success: false
+      });
+    }
+
     const newUserRole = await userRoleService.createUserRole(user_id, role_id);
-    res.status(200).json({
-      mensaje: "Rol de usuario creado correctamente",
-      nuevoUsuarioRol: newUserRole,
-      exito: true
+    return res.status(200).json({
+      message: "Rol de usuario creado correctamente",
+      newUserRole: newUserRole,
+      success: true
     });
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al crear rol de usuario",
+    return res.status(400).json({
+      message: "Error al crear rol de usuario",
       error: error.message,
-      exito: false
+      success: false
     });
   }
 };
 
 exports.getUserRole = async (req, res) => {
   try {
-    const idUsuarioRol = req.params.id;
-    const usuarioRol = await userRoleService.getUserRole(idUsuarioRol);
-    if (!usuarioRol) {
-      return res.status(404).json({ error: "Rol de usuario no encontrado" });
+    const idUserRole = req.params.id;
+    const userRole = await userRoleService.getUserRole(idUserRole);
+    if (!userRole) {
+      return res.status(404).json({ error: "Rol de usuario no encontrado", success: false });
     }
-    res.json(usuarioRol);
+    return res.status(200).json({userRole, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message });
   }
 };
 
 exports.updateUserRole = async (req, res) => {
   try {
-    const idUsuarioRol = req.params.id;
+    const idUserRole = req.params.id;
     const { user_id, role_id } = req.body;
-    const usuarioRolActualizado = await userRoleService.updateUserRole(idUsuarioRol, user_id, role_id);
-    res.json({
-      mensaje: "Rol de usuario actualizado correctamente",
-      usuarioRolActualizado
+
+    
+    const exists = await userRoleService.getUserRoleByUser(user_id, role_id);
+
+    if (exists) {
+      return res.status(400).json({
+        message: "El Usuario ya tiene el role",
+        success: false
+      });
+    }
+
+    const updatedUserRole = await userRoleService.updateUserRole(idUserRole, user_id, role_id);
+    return res.status(200).json({
+      message: "Rol de usuario actualizado correctamente",
+      updatedUserRole, success: true
     });
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al actualizar rol de usuario",
-      error: error.message
+    return res.status(400).json({
+      message: "Error al actualizar rol de usuario",
+      error: error.message, success: false
     });
   }
 };
 
 exports.deleteUserRole = async (req, res) => {
   try {
-    const idUsuarioRol = req.params.id;
-    await userRoleService.deleteUserRole(idUsuarioRol);
-    res.json({ mensaje: "Rol de usuario eliminado correctamente" });
+    const idUserRole = req.params.id;
+    await userRoleService.deleteUserRole(idUserRole);
+    return res.status(200).json({ message: "Rol de usuario eliminado correctamente", success: true });
   } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al eliminar rol de usuario",
-      error: error.message
+    return res.status(500).json({
+      message: "Error al eliminar rol de usuario",
+      error: error.message, success: false
     });
   }
 };
@@ -65,11 +87,11 @@ exports.deleteUserRole = async (req, res) => {
 exports.getAllUserRoles = async (req, res) => {
   try {
     const usuariosRoles = await userRoleService.getAllUserRoles();
-    res.json(usuariosRoles);
+    return res.status(200).json({usuariosRoles, success: true});
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al obtener todos los roles de usuario",
-      error: error.message
+    return res.status(400).json({
+      message: "Error al obtener todos los roles de usuario",
+      error: error.message, success: false
     });
   }
 };

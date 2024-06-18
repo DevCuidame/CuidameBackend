@@ -12,6 +12,9 @@ exports.createOtherSpecialty = async (medical_consult_id, type, date, concept, r
 exports.getOtherSpecialty = async (id) => {
   const query = 'SELECT * FROM other_specialties WHERE id = $1';
   const result_ = await pool.query(query, [id]);
+  if (!result_.rows.length) {
+    return null;  
+  }
   const { medical_consult_id, type, date, concept, result, pathology_report } = result_.rows[0];
   return new OtherSpecialties(id, medical_consult_id, type, date, concept, result, pathology_report);
 };
@@ -19,6 +22,9 @@ exports.getOtherSpecialty = async (id) => {
 exports.getAllOtherSpecialties = async () => {
   const query = 'SELECT * FROM other_specialties';
   const result = await pool.query(query);
+  if (!result.rows.length) {
+    return null;  
+  }
   return result.rows.map(row => {
     const { id, medical_consult_id, type, date, concept, result, pathology_report } = row;
     return new OtherSpecialties(id, medical_consult_id, type, date, concept, result, pathology_report);

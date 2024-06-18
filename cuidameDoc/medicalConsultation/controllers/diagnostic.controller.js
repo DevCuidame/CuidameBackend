@@ -15,13 +15,13 @@ exports.createDiagnostic = async (req, res) => {
       epicrisis
     );
 
-    res.status(200).json({
+    return res.status(200).json({
       mensaje: "Diagnóstico creado correctamente",
-      nuevoDiagnostico: newDiagnostic,
+      newDiagnostic: newDiagnostic,
       exito: true
     });
   } catch (error) {
-    res.status(400).json({
+    return res.status(400).json({
       mensaje: "Error al crear diagnóstico",
       error: error.message,
       exito: false
@@ -31,31 +31,31 @@ exports.createDiagnostic = async (req, res) => {
 
 exports.getDiagnostic = async (req, res) => {
   try {
-    const idDiagnostico = req.params.id;
-    const diagnostico = await diagnosticService.getDiagnostic(idDiagnostico);
+    const idDiagnostic = req.params.id;
+    const diagnostic = await diagnosticService.getDiagnostic(idDiagnostic);
 
-    if (!diagnostico) {
-      return res.status(404).json({ error: "Diagnóstico no encontrado" });
+    if (!diagnostic) {
+      return res.status(404).json({ error: "Diagnóstico no encontrado" , success: false});
     }
 
-    res.json(diagnostico);
+    return res.status(200).json({diagnostic, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.getAllDiagnostics = async (req, res) => {
   try {
-    const diagnosticos = await diagnosticService.getAllDiagnostics();
-    res.json(diagnosticos);
+    const diagnostics = await diagnosticService.getAllDiagnostics();
+    return res.status(200).json({diagnostics, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.updateDiagnostic = async (req, res) => {
   try {
-    const idDiagnostico = req.params.id;
+    const idDiagnostic = req.params.id;
     const {
       medical_consult_id,
       diagnostic,
@@ -63,25 +63,25 @@ exports.updateDiagnostic = async (req, res) => {
     } = req.body;
 
     const diagnosticActualizado = await diagnosticService.updateDiagnostic(
-      idDiagnostico,
+      idDiagnostic,
       medical_consult_id,
       diagnostic,
       epicrisis
     );
 
-    res.json(diagnosticActualizado);
+    return res.status(200).json({diagnosticActualizado, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.deleteDiagnostic = async (req, res) => {
   try {
-    const idDiagnostico = req.params.id;
-    await diagnosticService.deleteDiagnostic(idDiagnostico);
+    const idDiagnostic = req.params.id;
+    await diagnosticService.deleteDiagnostic(idDiagnostic);
 
-    res.json({ mensaje: "Diagnóstico eliminado correctamente" });
+    return res.status(200).json({ mensaje: "Diagnóstico eliminado correctamente", success: true });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message, success: false});
   }
 };

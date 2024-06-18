@@ -8,6 +8,10 @@ exports.getHealthInsurance = async (id) => {
   return healthInsuranceRepository.getHealthInsurance(id);
 };
 
+exports.getHealthInsuranceByEmail = async (email) => {
+  return healthInsuranceRepository.getHealthInsuranceByEmail(email);
+};
+
 exports.updateHealthInsurance = async (id, company, address1, address2, city, phone, email) => {
   return healthInsuranceRepository.updateHealthInsurance(id, company, address1, address2, city, phone, email);
 };

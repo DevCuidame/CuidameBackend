@@ -22,7 +22,7 @@ exports.createRelative = async (
   status
 ) => {
   const query = `
-    INSERT INTO relatives (
+    INSERT INTO relative (
       user_id,
       doctor_id,
       first_name,
@@ -90,55 +90,34 @@ exports.createRelative = async (
 };
 
 exports.getRelative = async (id) => {
-  const query = 'SELECT * FROM relatives WHERE id = $1';
+  const query = 'SELECT * FROM relative WHERE id = $1';
   const result = await pool.query(query, [id]);
-  const {
-    user_id,
-    doctor_id,
-    first_name,
-    last_name,
-    identification_type,
-    identification_number,
-    age,
-    gender,
-    marital_status,
-    place_of_birth,
-    city_id,
-    address,
-    phone,
-    occupation,
-    position,
-    health_insurance_id,
-    company_id,
-    status
-  } = result.rows[0];
+  if (!result.rows.length) {
+    return null;  
+  }
+  const { user_id, doctor_id, first_name, last_name, identification_type, identification_number, age, gender, marital_status, place_of_birth, city_id, address, phone, occupation, position, health_insurance_id, company_id, status } = result.rows[0];
 
-  return new Relative(
-    id,
-    user_id,
-    doctor_id,
-    first_name,
-    last_name,
-    identification_type,
-    identification_number,
-    age,
-    gender,
-    marital_status,
-    place_of_birth,
-    city_id,
-    address,
-    phone,
-    occupation,
-    position,
-    health_insurance_id,
-    company_id,
-    status
-  );
+  return new Relative( id, user_id, doctor_id, first_name, last_name, identification_type, identification_number, age, gender, marital_status, place_of_birth, city_id, address, phone, occupation, position, health_insurance_id, company_id, status );
+};
+
+
+exports.getRelativeByCard = async (id) => {
+  const query = 'SELECT * FROM relative WHERE identification_number = $1';
+  const result = await pool.query(query, [id]);
+  if (!result.rows.length) {
+    return null;  
+  }
+  const { user_id, doctor_id, first_name, last_name, identification_type, identification_number, age, gender, marital_status, place_of_birth, city_id, address, phone, occupation, position, health_insurance_id, company_id, status } = result.rows[0];
+
+  return new Relative( id, user_id, doctor_id, first_name, last_name, identification_type, identification_number, age, gender, marital_status, place_of_birth, city_id, address, phone, occupation, position, health_insurance_id, company_id, status );
 };
 
 exports.getAllRelatives = async () => {
-  const query = 'SELECT * FROM relatives';
+  const query = 'SELECT * FROM relative';
   const result = await pool.query(query);
+  if (!result.rows.length) {
+    return null;  
+  }
 
   return result.rows.map(row => {
     const {
@@ -209,7 +188,7 @@ exports.updateRelative = async (
   status
 ) => {
   const query = `
-    UPDATE relatives SET 
+    UPDATE relative SET 
       user_id = $1,
       doctor_id = $2,
       first_name = $3,
@@ -278,6 +257,6 @@ exports.updateRelative = async (
 };
 
 exports.deleteRelative = async (id) => {
-  const query = 'DELETE FROM relatives WHERE id = $1';
+  const query = 'DELETE FROM relative WHERE id = $1';
   await pool.query(query, [id]);
 };

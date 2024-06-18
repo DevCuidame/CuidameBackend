@@ -9,6 +9,10 @@ exports.getPopulation = async (id) => {
   return populationRepository.getPopulation(id);
 };
 
+exports.getPopulationByCard = async (id) => {
+  return populationRepository.getPopulationByCard(id);
+};
+
 exports.getAllPopulations = async () => {
   return populationRepository.getAllPopulations();
 };

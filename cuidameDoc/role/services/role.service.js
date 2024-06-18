@@ -8,6 +8,10 @@ exports.getRole = async (id) => {
   return roleRepository.getRole(id);
 };
 
+exports.getRoleByName = async (id) => {
+  return roleRepository.getRoleByName(id);
+};
+
 exports.updateRole = async (id, name, status) => {
   return roleRepository.updateRole(id, name, status);
 };

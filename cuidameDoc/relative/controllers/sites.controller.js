@@ -5,71 +5,71 @@ exports.createSite = async (req, res) => {
   try {
     const { address, phone, contact, city_id, company_id } = req.body;
     const newSite = await siteService.createSite(address, phone, contact, city_id, company_id);
-    res.status(200).json({
-      mensaje: "Sitio creado correctamente",
-      nuevoSitio: newSite,
-      exito: true
+    return res.status(200).json({
+      message: "Sitio creado correctamente",
+      newSite: newSite,
+      success: true
     });
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al crear sitio",
+    return res.status(400).json({
+      message: "Error al crear sitio",
       error: error.message,
-      exito: false
+      success: false
     });
   }
 };
 
 exports.getSite = async (req, res) => {
   try {
-    const idSitio = req.params.id;
-    const sitio = await siteService.getSite(idSitio);
-    if (!sitio) {
-      return res.status(404).json({ error: "Sitio no encontrado" });
+    const idSite = req.params.id;
+    const site = await siteService.getSite(idSite);
+    if (!site) {
+      return res.status(404).json({ error: "Sitio no encontrado", success: false });
     }
-    res.json(sitio);
+    return res.status(200).json({site, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false });
   }
 };
 
 exports.updateSite = async (req, res) => {
   try {
-    const idSitio = req.params.id;
+    const idSite = req.params.id;
     const { address, phone, contact, city_id, company_id } = req.body;
-    const sitioActualizado = await siteService.updateSite(idSitio, address, phone, contact, city_id, company_id);
-    res.json({
-      mensaje: "Sitio actualizado correctamente",
-      sitioActualizado
+    const updatedSite = await siteService.updateSite(idSite, address, phone, contact, city_id, company_id);
+    return res.status(200).json({
+      message: "Sitio actualizado correctamente",
+      updatedSite, success: true
     });
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al actualizar sitio",
-      error: error.message
+    return res.status(400).json({
+      message: "Error al actualizar sitio",
+      error: error.message, success: false
     });
   }
 };
 
 exports.deleteSite = async (req, res) => {
   try {
-    const idSitio = req.params.id;
-    await siteService.deleteSite(idSitio);
-    res.json({ mensaje: "Sitio eliminado correctamente" });
+    const idSite = req.params.id;
+    await siteService.deleteSite(idSite);
+    return res.status(200).json({ message: "Sitio eliminado correctamente", success: true });
   } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al eliminar sitio",
-      error: error.message
+    return res.status(500).json({
+      message: "Error al eliminar sitio",
+      error: error.message, success: false
     });
   }
 };
 
 exports.getAllSites = async (req, res) => {
   try {
-    const sitios = await siteService.getAllSites();
-    res.json(sitios);
+    const sites = await siteService.getAllSites();
+    return res.status(200).json({sites, success: true});
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al obtener todos los sitios",
-      error: error.message
+    return res.status(400).json({
+      message: "Error al obtener todos los sitios",
+      error: error.message, success: false
     });
   }
 };

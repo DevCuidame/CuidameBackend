@@ -12,6 +12,9 @@ exports.createRecord = async (medical_consult_id, type, date, description) => {
 exports.getRecord = async (id) => {
   const query = 'SELECT * FROM records WHERE id = $1';
   const result = await pool.query(query, [id]);
+  if (!result.rows.length) {
+    return null;  
+  }
   const { medical_consult_id, type, date, description } = result.rows[0];
   return new Records(id, medical_consult_id, type, date, description);
 };
@@ -19,6 +22,9 @@ exports.getRecord = async (id) => {
 exports.getAllRecords = async () => {
   const query = 'SELECT * FROM records';
   const result = await pool.query(query);
+  if (!result.rows.length) {
+    return null;  
+  }
   return result.rows.map(row => {
     const { id, medical_consult_id, type, date, description } = row;
     return new Records(id, medical_consult_id, type, date, description);

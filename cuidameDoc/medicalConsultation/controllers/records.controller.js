@@ -17,47 +17,47 @@ exports.createRecord = async (req, res) => {
       description
     );
 
-    res.status(200).json({
-      mensaje: "Registro creado correctamente",
+    return res.status(200).json({
+      messange: "Registro creado correctamente",
       nuevoRegistro: newRecord,
-      exito: true
+      success: true
     });
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al crear registro",
+    return res.status(400).json({
+      messange: "Error al crear registro",
       error: error.message,
-      exito: false
+      success: false
     });
   }
 };
 
 exports.getRecord = async (req, res) => {
   try {
-    const idRegistro = req.params.id;
-    const registro = await recordsService.getRecord(idRegistro);
+    const idRecord = req.params.id;
+    const record = await recordsService.getRecord(idRecord);
 
-    if (!registro) {
-      return res.status(404).json({ error: "Registro no encontrado" });
+    if (!record) {
+      return res.status(404).json({ error: "Registro no encontrado", success: false });
     }
 
-    res.json(registro);
+    return res.status(200).json({record, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.getAllRecords = async (req, res) => {
   try {
-    const registros = await recordsService.getAllRecords();
-    res.json(registros);
+    const records = await recordsService.getAllRecords();
+    return res.status(200).json({records, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.updateRecord = async (req, res) => {
   try {
-    const idRegistro = req.params.id;
+    const idRecord = req.params.id;
     const {
       medical_consult_id,
       type,
@@ -65,27 +65,27 @@ exports.updateRecord = async (req, res) => {
       description
     } = req.body;
 
-    const registroActualizado = await recordsService.updateRecord(
-      idRegistro,
+    const updatedRecord = await recordsService.updateRecord(
+      idRecord,
       medical_consult_id,
       type,
       date,
       description
     );
 
-    res.json(registroActualizado);
+    return res.status(200).json({updatedRecord, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.deleteRecord = async (req, res) => {
   try {
-    const idRegistro = req.params.id;
-    await recordsService.deleteRecord(idRegistro);
+    const idRecord = req.params.id;
+    await recordsService.deleteRecord(idRecord);
 
-    res.json({ mensaje: "Registro eliminado correctamente" });
+    return res.status(200).json({ messange: "Registro eliminado correctamente", success: true });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message, success: false});
   }
 };

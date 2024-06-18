@@ -12,6 +12,9 @@ exports.createDoctorRelative = async (doctor_id, relative_id, service_id) => {
 exports.getDoctorRelative = async (id) => {
   const query = 'SELECT * FROM doctor_relatives WHERE id = $1';
   const result = await pool.query(query, [id]);
+  if (!result.rows.length) {
+    return null;  
+  }
   const { doctor_id, relative_id, service_id } = result.rows[0];
   return new DoctorRelative(id, doctor_id, relative_id, service_id);
 };
@@ -19,6 +22,9 @@ exports.getDoctorRelative = async (id) => {
 exports.getAllDoctorRelatives = async () => {
   const query = 'SELECT * FROM doctor_relatives';
   const result = await pool.query(query);
+  if (!result.rows.length) {
+    return null;  
+  }
   return result.rows.map(row => {
     const { id, doctor_id, relative_id, service_id } = row;
     return new DoctorRelative(id, doctor_id, relative_id, service_id);

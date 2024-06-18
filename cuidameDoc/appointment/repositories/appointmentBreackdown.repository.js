@@ -12,6 +12,9 @@ exports.createAppointmentBreakdown = async (user_id, doctor_id, appointment_id) 
 exports.getAppointmentBreakdown = async (id) => {
   const query = 'SELECT * FROM appointment_breakdowns WHERE id = $1';
   const result = await pool.query(query, [id]);
+  if (!result.rows.length) {
+    return null;  
+  }
   const { user_id, doctor_id, appointment_id } = result.rows[0];
   return new AppointmentBreakdown(id, user_id, doctor_id, appointment_id);
 };
@@ -19,6 +22,9 @@ exports.getAppointmentBreakdown = async (id) => {
 exports.getAllAppointmentBreakdowns = async () => {
   const query = 'SELECT * FROM appointment_breakdowns';
   const result = await pool.query(query);
+  if (!result.rows.length) {
+    return null;  
+  }
   return result.rows.map(row => {
     const { id, user_id, doctor_id, appointment_id } = row;
     return new AppointmentBreakdown(id, user_id, doctor_id, appointment_id);

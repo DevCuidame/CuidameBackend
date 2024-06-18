@@ -17,47 +17,47 @@ exports.createHabits = async (req, res) => {
       other
     );
 
-    res.status(200).json({
-      mensaje: "Hábitos creados correctamente",
-      nuevosHabitos: newHabit,
-      exito: true
+    return res.status(200).json({
+      message: "Hábitos creados correctamente",
+      newHabits: newHabit,
+      success: true
     });
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al crear hábitos",
+    return res.status(400).json({
+      message: "Error al crear hábitos",
       error: error.message,
-      exito: false
+      success: false
     });
   }
 };
 
 exports.getHabits = async (req, res) => {
   try {
-    const idHabitos = req.params.id;
-    const habitos = await habitsService.getHabits(idHabitos);
+    const idhabits = req.params.id;
+    const habits = await habitsService.getHabits(idhabits);
 
-    if (!habitos) {
-      return res.status(404).json({ error: "Hábitos no encontrados" });
+    if (!habits) {
+      return res.status(404).json({ error: "Hábitos no encontrados", success: false });
     }
 
-    res.json(habitos);
+    return res.status(200).json({habits, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.getAllHabits = async (req, res) => {
   try {
-    const habitos = await habitsService.getAllHabits();
-    res.json(habitos);
+    const habits = await habitsService.getAllHabits();
+    return res.status(200).json({habits, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.updateHabits = async (req, res) => {
   try {
-    const idHabitos = req.params.id;
+    const idhabits = req.params.id;
     const {
       medical_consult_id,
       smoke,
@@ -65,27 +65,27 @@ exports.updateHabits = async (req, res) => {
       other
     } = req.body;
 
-    const habitosActualizados = await habitsService.updateHabits(
-      idHabitos,
+    const updatedHabits = await habitsService.updateHabits(
+      idhabits,
       medical_consult_id,
       smoke,
       liquor,
       other
     );
 
-    res.json(habitosActualizados);
+    return res.status(200).json({updatedHabits, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.deleteHabits = async (req, res) => {
   try {
-    const idHabitos = req.params.id;
-    await habitsService.deleteHabits(idHabitos);
+    const idhabits = req.params.id;
+    await habitsService.deleteHabits(idhabits);
 
-    res.json({ mensaje: "Hábitos eliminados correctamente" });
+    return res.status(200).json({ message: "Hábitos eliminados correctamente", success: true });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message, success: false});
   }
 };

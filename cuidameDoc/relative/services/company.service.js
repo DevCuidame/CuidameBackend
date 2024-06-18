@@ -9,6 +9,11 @@ exports.getCompany = async (id) => {
   return companyRepository.getCompany(id);
 };
 
+
+exports.getCompanyByNit = async (id) => {
+  return companyRepository.getCompanyByNit(id);
+};
+
 exports.updateCompany = async (id, data) => {
   const { name, address, nit, phone, contact, city_id } = data;
   return companyRepository.updateCompany(id, name, address, nit, phone, contact, city_id);

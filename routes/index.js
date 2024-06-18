@@ -66,7 +66,7 @@ function routerApi(app) {
   //HealthInsurance
   router.use("/bonds", bondsRouter);
   router.use("/contract", contractRouter);
-  router.use("/contractservices", contractServicesRouter);
+  router.use("/contractservice", contractServicesRouter);
   router.use("/moderatorfee", moderatorFeeRouter);
   router.use("/paymentbill", paymentBillRouter);
   router.use("/population", populationRouter);

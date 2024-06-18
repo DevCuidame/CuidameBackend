@@ -8,6 +8,10 @@ exports.getUserRole = async (id) => {
   return userRoleRepository.getUserRole(id);
 };
 
+exports.getUserRoleByUser = async (role, user) => {
+  return userRoleRepository.getUserRoleByUser(role, user);
+};
+
 exports.updateUserRole = async (id, user_id, role_id) => {
   return userRoleRepository.updateUserRole(id, user_id, role_id);
 };

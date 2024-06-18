@@ -19,47 +19,47 @@ exports.createMedicalConsultation = async (req, res) => {
       reason
     );
 
-    res.status(200).json({
-      mensaje: "Consulta médica creada correctamente",
-      nuevaConsulta: newConsultation,
-      exito: true
+    return res.status(200).json({
+      message: "Consulta médica creada correctamente",
+      newConsult: newConsultation,
+      success: true
     });
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al crear consulta médica",
+    return res.status(400).json({
+      message: "Error al crear consulta médica",
       error: error.message,
-      exito: false
+      success: false
     });
   }
 };
 
 exports.getMedicalConsultation = async (req, res) => {
   try {
-    const idConsulta = req.params.id;
-    const consulta = await medicalConsultationService.getMedicalConsultation(idConsulta);
+    const idConsult = req.params.id;
+    const consult = await medicalConsultationService.getMedicalConsultation(idConsult);
 
-    if (!consulta) {
-      return res.status(404).json({ error: "Consulta médica no encontrada" });
+    if (!consult) {
+      return res.status(404).json({ error: "Consulta médica no encontrada", success: false });
     }
 
-    res.json(consulta);
+    return res.status(200).json({consult, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.getAllMedicalConsultations = async (req, res) => {
   try {
-    const consultas = await medicalConsultationService.getAllMedicalConsultations();
-    res.json(consultas);
+    const consults = await medicalConsultationService.getAllMedicalConsultations();
+    return res.status(200).json({consults, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.updateMedicalConsultation = async (req, res) => {
   try {
-    const idConsulta = req.params.id;
+    const idConsult = req.params.id;
     const {
       relative_id,
       type,
@@ -68,8 +68,8 @@ exports.updateMedicalConsultation = async (req, res) => {
       reason
     } = req.body;
 
-    const consultaActualizada = await medicalConsultationService.updateMedicalConsultation(
-      idConsulta,
+    const updatedConsult = await medicalConsultationService.updateMedicalConsultation(
+      idConsult,
       relative_id,
       type,
       city_id,
@@ -77,19 +77,19 @@ exports.updateMedicalConsultation = async (req, res) => {
       reason
     );
 
-    res.json(consultaActualizada);
+    return res.status(200).json({updatedConsult, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.deleteMedicalConsultation = async (req, res) => {
   try {
-    const idConsulta = req.params.id;
-    await medicalConsultationService.deleteMedicalConsultation(idConsulta);
+    const idConsult = req.params.id;
+    await medicalConsultationService.deleteMedicalConsultation(idConsult);
 
-    res.json({ mensaje: "Consulta médica eliminada correctamente" });
+    return res.status(200).json({ message: "Consulta médica eliminada correctamente", success: true });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message, success: false});
   }
 };

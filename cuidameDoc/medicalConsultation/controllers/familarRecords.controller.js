@@ -23,47 +23,47 @@ exports.createFamiliarRecord = async (req, res) => {
       oncological
     );
 
-    res.status(200).json({
-      mensaje: "Registro familiar creado correctamente",
-      nuevoRegistroFamiliar: newFamiliarRecord,
-      exito: true
+    return res.status(200).json({
+      message: "Registro familiar creado correctamente",
+      newFamiliarRecord: newFamiliarRecord,
+      success: true
     });
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al crear registro familiar",
+    return res.status(400).json({
+      message: "Error al crear registro familiar",
       error: error.message,
-      exito: false
+      success: false
     });
   }
 };
 
 exports.getFamiliarRecord = async (req, res) => {
   try {
-    const idRegistroFamiliar = req.params.id;
-    const registroFamiliar = await familiarRecordsService.getFamiliarRecord(idRegistroFamiliar);
+    const idFamiliarRecord = req.params.id;
+    const familiarRecord = await familiarRecordsService.getFamiliarRecord(idFamiliarRecord);
 
-    if (!registroFamiliar) {
-      return res.status(404).json({ error: "Registro familiar no encontrado" });
+    if (!familiarRecord) {
+      return res.status(404).json({ error: "Registro familiar no encontrado", success: false });
     }
 
-    res.json(registroFamiliar);
+    return res.status(200).json({familiarRecord, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.getAllFamiliarRecords = async (req, res) => {
   try {
-    const registrosFamiliares = await familiarRecordsService.getAllFamiliarRecords();
-    res.json(registrosFamiliares);
+    const familiarRecords = await familiarRecordsService.getAllFamiliarRecords();
+    return res.status(200).json({familiarRecords, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.updateFamiliarRecord = async (req, res) => {
   try {
-    const idRegistroFamiliar = req.params.id;
+    const idFamiliarRecord = req.params.id;
     const {
       medical_consult_id,
       relative,
@@ -74,8 +74,8 @@ exports.updateFamiliarRecord = async (req, res) => {
       oncological
     } = req.body;
 
-    const registroFamiliarActualizado = await familiarRecordsService.updateFamiliarRecord(
-      idRegistroFamiliar,
+    const updatedFamiliarRecord = await familiarRecordsService.updateFamiliarRecord(
+      idFamiliarRecord,
       medical_consult_id,
       relative,
       diagnostic,
@@ -85,19 +85,19 @@ exports.updateFamiliarRecord = async (req, res) => {
       oncological
     );
 
-    res.json(registroFamiliarActualizado);
+    return res.status(200).json({updatedFamiliarRecord, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.deleteFamiliarRecord = async (req, res) => {
   try {
-    const idRegistroFamiliar = req.params.id;
-    await familiarRecordsService.deleteFamiliarRecord(idRegistroFamiliar);
+    const idFamiliarRecord = req.params.id;
+    await familiarRecordsService.deleteFamiliarRecord(idFamiliarRecord);
 
-    res.json({ mensaje: "Registro familiar eliminado correctamente" });
+    return res.status(200).json({ message: "Registro familiar eliminado correctamente", success: true });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message, success: false});
   }
 };

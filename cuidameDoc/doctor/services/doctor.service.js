@@ -9,6 +9,10 @@ exports.getDoctor = async (id) => {
   return doctorRepository.getDoctor(id);
 };
 
+exports.getDoctorByCard = async (identification_number) => {
+  return doctorRepository.getDoctorByCard(identification_number);
+};
+
 exports.getAllDoctors = async () => {
   return doctorRepository.getAllDoctors();
 };

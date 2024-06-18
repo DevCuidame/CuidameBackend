@@ -21,47 +21,47 @@ exports.createOtherSpecialty = async (req, res) => {
       pathology_report
     );
 
-    res.status(200).json({
-      mensaje: "Especialidad adicional creada correctamente",
-      nuevaEspecialidad: newSpecialty,
-      exito: true
+    return res.status(200).json({
+      message: "Especialidad adicional creada correctamente",
+      newSpeciality: newSpecialty,
+      success: true
     });
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al crear especialidad adicional",
+    return res.status(400).json({
+      message: "Error al crear especialidad adicional",
       error: error.message,
-      exito: false
+      success: false
     });
   }
 };
 
 exports.getOtherSpecialty = async (req, res) => {
   try {
-    const idEspecialidad = req.params.id;
-    const especialidad = await otherSpecialtiesService.getOtherSpecialty(idEspecialidad);
+    const idSpeciality = req.params.id;
+    const speciality = await otherSpecialtiesService.getOtherSpecialty(idSpeciality);
 
-    if (!especialidad) {
-      return res.status(404).json({ error: "Especialidad adicional no encontrada" });
+    if (!speciality) {
+      return res.status(404).json({ error: "Especialidad adicional no encontrada" , success: false});
     }
 
-    res.json(especialidad);
+    return res.status(200).json({speciality, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.getAllOtherSpecialties = async (req, res) => {
   try {
-    const especialidades = await otherSpecialtiesService.getAllOtherSpecialties();
-    res.json(especialidades);
+    const specialities = await otherSpecialtiesService.getAllOtherSpecialties();
+    return res.status(200).json({specialities, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.updateOtherSpecialty = async (req, res) => {
   try {
-    const idEspecialidad = req.params.id;
+    const idSpeciality = req.params.id;
     const {
       medical_consult_id,
       type,
@@ -71,8 +71,8 @@ exports.updateOtherSpecialty = async (req, res) => {
       pathology_report
     } = req.body;
 
-    const especialidadActualizada = await otherSpecialtiesService.updateOtherSpecialty(
-      idEspecialidad,
+    const updatedSpeciality = await otherSpecialtiesService.updateOtherSpecialty(
+      idSpeciality,
       medical_consult_id,
       type,
       date,
@@ -81,19 +81,19 @@ exports.updateOtherSpecialty = async (req, res) => {
       pathology_report
     );
 
-    res.json(especialidadActualizada);
+    return res.status(200).json({updatedSpeciality, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.deleteOtherSpecialty = async (req, res) => {
   try {
-    const idEspecialidad = req.params.id;
-    await otherSpecialtiesService.deleteOtherSpecialty(idEspecialidad);
+    const idSpeciality = req.params.id;
+    await otherSpecialtiesService.deleteOtherSpecialty(idSpeciality);
 
-    res.json({ mensaje: "Especialidad adicional eliminada correctamente" });
+    return res.status(200).json({ message: "Especialidad adicional eliminada correctamente", success: true });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message, success: false});
   }
 };

@@ -4,60 +4,69 @@ const roleService = require("../services/role.service");
 exports.createRole = async (req, res) => {
   try {
     const { name, status } = req.body;
+
+    const exists = await roleService.getRoleByName(name);
+    if (exists){
+      return res.status(400).json({
+        message: "Rol ya existe",
+        success: false
+      });
+    }
+
     const newRole = await roleService.createRole(name, status);
-    res.status(200).json({
-      mensaje: "Rol creado correctamente",
+    return res.status(200).json({
+      message: "Rol creado correctamente",
       nuevoRol: newRole,
-      exito: true
+      success: true
     });
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al crear rol",
+    return res.status(400).json({
+      message: "Error al crear rol",
       error: error.message,
-      exito: false
+      success: false
     });
   }
 };
 
 exports.getRole = async (req, res) => {
   try {
-    const idRol = req.params.id;
-    const rol = await roleService.getRole(idRol);
+    const idRole = req.params.id;
+    const rol = await roleService.getRole(idRole);
     if (!rol) {
       return res.status(404).json({ error: "Rol no encontrado" });
     }
-    res.json(rol);
+    return res.status(200).json({rol, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false });
   }
 };
 
 exports.updateRole = async (req, res) => {
   try {
-    const idRol = req.params.id;
+    const idRole = req.params.id;
     const { name, status } = req.body;
-    const rolActualizado = await roleService.updateRole(idRol, name, status);
-    res.json({
-      mensaje: "Rol actualizado correctamente",
-      rolActualizado
+    const updatedRole = await roleService.updateRole(idRole, name, status);
+    return res.status(200).json({
+      message: "Rol actualizado correctamente",
+      updatedRole, success: true
     });
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al actualizar rol",
-      error: error.message
+    return res.status(400).json({
+      message: "Error al actualizar rol",
+      error: error.message, success: false
     });
   }
 };
 
 exports.deleteRole = async (req, res) => {
   try {
-    const idRol = req.params.id;
-    await roleService.deleteRole(idRol);
-    res.json({ mensaje: "Rol eliminado correctamente" });
+    const idRole = req.params.id;
+    await roleService.deleteRole(idRole);
+    return res.status(200).json({ message: "Rol eliminado correctamente" , success: true});
   } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al eliminar rol",
-      error: error.message
+    return res.status(500).json({
+      message: "Error al eliminar rol",
+      error: error.message, success: false
     });
   }
 };
@@ -65,11 +74,11 @@ exports.deleteRole = async (req, res) => {
 exports.getAllRoles = async (req, res) => {
   try {
     const roles = await roleService.getAllRoles();
-    res.json(roles);
+    return res.status(200).json({roles, success: true});
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al obtener todos los roles",
-      error: error.message
+    return res.status(400).json({
+      message: "Error al obtener todos los roles",
+      error: error.message, success: false
     });
   }
 };

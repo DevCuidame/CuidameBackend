@@ -17,16 +17,16 @@ exports.createRegimentType = async (req, res) => {
       max_value_event
     );
 
-    res.status(200).json({
-      mensaje: "Tipo de régimen creado correctamente",
+    return res.status(200).json({
+      message: "Tipo de régimen creado correctamente",
       nuevoTipoRegimen: newRegimentType,
-      exito: true
+      success: true
     });
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al crear tipo de régimen",
+    return res.status(400).json({
+      message: "Error al crear tipo de régimen",
       error: error.message,
-      exito: false
+      success: false
     });
   }
 };
@@ -40,18 +40,18 @@ exports.getRegimentType = async (req, res) => {
       return res.status(404).json({ error: "Tipo de régimen no encontrado" });
     }
 
-    res.json(tipoRegimen);
+   return res.status(200).json({tipoRegimen, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.getAllRegimentTypes = async (req, res) => {
   try {
     const tiposRegimen = await regimentTypeService.getAllRegimentTypes();
-    res.json(tiposRegimen);
+   return res.status(200).json({tiposRegimen, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
@@ -73,9 +73,9 @@ exports.updateRegimentType = async (req, res) => {
       max_value_event
     );
 
-    res.json(tipoRegimenActualizado);
+   return res.status(200).json({tipoRegimenActualizado, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
@@ -84,8 +84,8 @@ exports.deleteRegimentType = async (req, res) => {
     const idTipoRegimen = req.params.id;
     await regimentTypeService.deleteRegimentType(idTipoRegimen);
 
-    res.json({ mensaje: "Tipo de régimen eliminado correctamente" });
+   return res.status(200).json({ message: "Tipo de régimen eliminado correctamente" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message, success: false});
   }
 };

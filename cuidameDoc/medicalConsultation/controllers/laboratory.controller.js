@@ -21,14 +21,14 @@ exports.createLaboratory = async (req, res) => {
       pathology_report
     );
 
-    res.status(200).json({
-      mensaje: "Laboratorio creado correctamente",
-      nuevoLaboratorio: newLaboratory,
+    return res.status(200).json({
+      message: "Laboratorio creado correctamente",
+      newLaboratory: newLaboratory,
       exito: true
     });
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al crear laboratorio",
+    return res.status(400).json({
+      message: "Error al crear laboratorio",
       error: error.message,
       exito: false
     });
@@ -37,31 +37,31 @@ exports.createLaboratory = async (req, res) => {
 
 exports.getLaboratory = async (req, res) => {
   try {
-    const idLaboratorio = req.params.id;
-    const laboratorio = await laboratoryService.getLaboratory(idLaboratorio);
+    const idLaboratory = req.params.id;
+    const laboratory = await laboratoryService.getLaboratory(idLaboratory);
 
-    if (!laboratorio) {
+    if (!laboratory) {
       return res.status(404).json({ error: "Laboratorio no encontrado" });
     }
 
-    res.json(laboratorio);
+    return res.status(200).json(laboratory);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.getAllLaboratories = async (req, res) => {
   try {
-    const laboratorios = await laboratoryService.getAllLaboratories();
-    res.json(laboratorios);
+    const laboratories = await laboratoryService.getAllLaboratories();
+    return res.status(200).json(laboratories);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.updateLaboratory = async (req, res) => {
   try {
-    const idLaboratorio = req.params.id;
+    const idLaboratory = req.params.id;
     const {
       medical_consult_id,
       exam_type,
@@ -71,8 +71,8 @@ exports.updateLaboratory = async (req, res) => {
       pathology_report
     } = req.body;
 
-    const laboratorioActualizado = await laboratoryService.updateLaboratory(
-      idLaboratorio,
+    const updatedLaboratory = await laboratoryService.updateLaboratory(
+      idLaboratory,
       medical_consult_id,
       exam_type,
       exam,
@@ -81,19 +81,19 @@ exports.updateLaboratory = async (req, res) => {
       pathology_report
     );
 
-    res.json(laboratorioActualizado);
+    return res.status(200).json(updatedLaboratory);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false});
   }
 };
 
 exports.deleteLaboratory = async (req, res) => {
   try {
-    const idLaboratorio = req.params.id;
-    await laboratoryService.deleteLaboratory(idLaboratorio);
+    const idLaboratory = req.params.id;
+    await laboratoryService.deleteLaboratory(idLaboratory);
 
-    res.json({ mensaje: "Laboratorio eliminado correctamente" });
+    return res.status(200).json({ message: "Laboratorio eliminado correctamente", success: true });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message, success: false});
   }
 };

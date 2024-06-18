@@ -12,6 +12,9 @@ exports.createBond = async (health_insurance_id, name, price) => {
 exports.getBond = async (id) => {
   const query = 'SELECT * FROM bonds WHERE id = $1';
   const result = await pool.query(query, [id]);
+  if (!result.rows.length) {
+    return null;  
+  }
   const { health_insurance_id, name, price } = result.rows[0];
   return new Bonds(id, health_insurance_id, name, price);
 };
@@ -19,6 +22,9 @@ exports.getBond = async (id) => {
 exports.getAllBonds = async () => {
   const query = 'SELECT * FROM bonds';
   const result = await pool.query(query);
+  if (!result.rows.length) {
+    return null;  
+  }
   return result.rows.map(row => {
     const { id, health_insurance_id, name, price } = row;
     return new Bonds(id, health_insurance_id, name, price);

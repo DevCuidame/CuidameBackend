@@ -8,6 +8,15 @@ exports.createRelative = async (req, res) => {
       age, gender, marital_status, place_of_birth, city_id, address, phone, occupation,
       position, health_insurance_id, company_id, status
     } = req.body;
+
+    const exists = await relativeService.getRelativeByCard(identification_number);
+
+    if (exists) {
+      return res.status(400).json({
+        message: "Familiar ya existe",
+        success: false
+      });
+    }
     
     const newRelative = await relativeService.createRelative(
       user_id, doctor_id, first_name, last_name, identification_type, identification_number,
@@ -15,81 +24,90 @@ exports.createRelative = async (req, res) => {
       position, health_insurance_id, company_id, status
     );
 
-    res.status(200).json({
-      mensaje: "Familiar creado correctamente",
-      nuevoFamiliar: newRelative,
-      exito: true
+    return res.status(200).json({
+      message: "Familiar creado correctamente",
+      newRelative: newRelative,
+      success: true
     });
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al crear familiar",
+    return res.status(400).json({
+      message: "Error al crear familiar",
       error: error.message,
-      exito: false
+      success: false
     });
   }
 };
 
 exports.getRelative = async (req, res) => {
   try {
-    const idFamiliar = req.params.id;
-    const familiar = await relativeService.getRelative(idFamiliar);
-    if (!familiar) {
+    const idRelative = req.params.id;
+    const relative = await relativeService.getRelative(idRelative);
+    if (!relative) {
       return res.status(404).json({ error: "Familiar no encontrado" });
     }
-    res.json(familiar);
+    return res.status(200).json({relative, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message, success: false });
   }
 };
 
 exports.updateRelative = async (req, res) => {
   try {
-    const idFamiliar = req.params.id;
+    const idRelative = req.params.id;
     const {
       user_id, doctor_id, first_name, last_name, identification_type, identification_number,
       age, gender, marital_status, place_of_birth, city_id, address, phone, occupation,
       position, health_insurance_id, company_id, status
     } = req.body;
 
-    const familiarActualizado = await relativeService.updateRelative(
-      idFamiliar, user_id, doctor_id, first_name, last_name, identification_type, identification_number,
+    const exists = await relativeService.getRelativeByCard(identification_number);
+
+    if (exists) {
+      return res.status(400).json({
+        message: "Familiar ya existe",
+        success: false
+      });
+    }
+
+    const updatedRelative = await relativeService.updateRelative(
+      idRelative, user_id, doctor_id, first_name, last_name, identification_type, identification_number,
       age, gender, marital_status, place_of_birth, city_id, address, phone, occupation,
       position, health_insurance_id, company_id, status
     );
 
-    res.json({
-      mensaje: "Familiar actualizado correctamente",
-      familiarActualizado
+    return res.status(200).json({
+      message: "Familiar actualizado correctamente",
+      updatedRelative, success: true
     });
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al actualizar familiar",
-      error: error.message
+    return res.status(400).json({
+      message: "Error al actualizar familiar",
+      error: error.message, success: false
     });
   }
 };
 
 exports.deleteRelative = async (req, res) => {
   try {
-    const idFamiliar = req.params.id;
-    await relativeService.deleteRelative(idFamiliar);
-    res.json({ mensaje: "Familiar eliminado correctamente" });
+    const idRelative = req.params.id;
+    await relativeService.deleteRelative(idRelative);
+    return res.status(200).json({ message: "Familiar eliminado correctamente" });
   } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al eliminar familiar",
-      error: error.message
+    return res.status(500).json({
+      message: "Error al eliminar familiar",
+      error: error.message, success: false
     });
   }
 };
 
 exports.getAllRelatives = async (req, res) => {
   try {
-    const familiares = await relativeService.getAllRelatives();
-    res.json(familiares);
+    const relatives = await relativeService.getAllRelatives();
+    return res.status(200).json({relatives, success: true});
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al obtener todos los familiares",
-      error: error.message
+    return res.status(400).json({
+      message: "Error al obtener todos los familiares",
+      error: error.message, success: false
     });
   }
 };

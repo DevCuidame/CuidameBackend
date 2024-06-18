@@ -12,6 +12,9 @@ exports.createAppointment = async (user_id, doctor_id, calendly_event_id, start_
 exports.getAppointment = async (id) => {
   const query = 'SELECT * FROM appointments WHERE id = $1';
   const result = await pool.query(query, [id]);
+  if (!result.rows.length) {
+    return null;  
+  }
   const { user_id, doctor_id, calendly_event_id, start_time, end_time, status, created_at, updated_at } = result.rows[0];
   return new Appointments(id, user_id, doctor_id, calendly_event_id, start_time, end_time, status, created_at, updated_at);
 };
@@ -19,6 +22,9 @@ exports.getAppointment = async (id) => {
 exports.getAllAppointments = async () => {
   const query = 'SELECT * FROM appointments';
   const result = await pool.query(query);
+  if (!result.rows.length) {
+    return null;  
+  }
   return result.rows.map(row => {
     const { id, user_id, doctor_id, calendly_event_id, start_time, end_time, status, created_at, updated_at } = row;
     return new Appointments(id, user_id, doctor_id, calendly_event_id, start_time, end_time, status, created_at, updated_at);

@@ -13,6 +13,11 @@ exports.getAllFamiliarRecords = async () => {
   return familiarRecordsRepository.getAllFamiliarRecords();
 };
 
+exports.getFamiliarRecordByConsult = async () => {
+  return familiarRecordsRepository.getFamiliarRecordByConsult();
+};
+
+
 exports.updateFamiliarRecord = async (id, medical_consult_id, relative, diagnostic, records, hemorrhagic, thrombotic, oncological) => {
   return familiarRecordsRepository.updateFamiliarRecord(id, medical_consult_id, relative, diagnostic, records, hemorrhagic, thrombotic, oncological);
 };

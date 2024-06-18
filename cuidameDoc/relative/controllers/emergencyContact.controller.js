@@ -6,70 +6,70 @@ exports.createEmergencyContact = async (req, res) => {
     const { relative_id, first_name, last_name, phone } = req.body;
     const newEmergencyContact = await emergencyContactService.createEmergencyContact(relative_id, first_name, last_name, phone);
     res.status(200).json({
-      mensaje: "Contacto de emergencia creado correctamente",
-      nuevoContacto: newEmergencyContact,
-      exito: true
+      message: "Contacto de emergencia creado correctamente",
+      newContact: newEmergencyContact,
+      success: true
     });
   } catch (error) {
     res.status(400).json({
-      mensaje: "Error al crear contacto de emergencia",
+      message: "Error al crear contacto de emergencia",
       error: error.message,
-      exito: false
+      success: false
     });
   }
 };
 
 exports.getEmergencyContact = async (req, res) => {
   try {
-    const idContactoEmergencia = req.params.id;
-    const contactoEmergencia = await emergencyContactService.getEmergencyContact(idContactoEmergencia);
-    if (!contactoEmergencia) {
+    const idEmergencyContact = req.params.id;
+    const emergencyContact = await emergencyContactService.getEmergencyContact(idEmergencyContact);
+    if (!emergencyContact) {
       return res.status(404).json({ error: "Contacto de emergencia no encontrado" });
     }
-    res.json(contactoEmergencia);
+    res.json({emergencyContact, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ error: error.message, success: false });
   }
 };
 
 exports.updateEmergencyContact = async (req, res) => {
   try {
-    const idContactoEmergencia = req.params.id;
+    const idEmergencyContact = req.params.id;
     const { relative_id, first_name, last_name, phone } = req.body;
-    const contactoEmergenciaActualizado = await emergencyContactService.updateEmergencyContact(idContactoEmergencia, relative_id, first_name, last_name, phone);
+    const updatedEmergencyContact = await emergencyContactService.updateEmergencyContact(idEmergencyContact, relative_id, first_name, last_name, phone);
     res.json({
-      mensaje: "Contacto de emergencia actualizado correctamente",
-      contactoEmergenciaActualizado
+      message: "Contacto de emergencia actualizado correctamente",
+      updatedEmergencyContact, success: true
     });
   } catch (error) {
     res.status(400).json({
-      mensaje: "Error al actualizar contacto de emergencia",
-      error: error.message
+      message: "Error al actualizar contacto de emergencia",
+      error: error.message, success: false
     });
   }
 };
 
 exports.deleteEmergencyContact = async (req, res) => {
   try {
-    const idContactoEmergencia = req.params.id;
-    await emergencyContactService.deleteEmergencyContact(idContactoEmergencia);
-    res.json({ mensaje: "Contacto de emergencia eliminado correctamente" });
+    const idEmergencyContact = req.params.id;
+    await emergencyContactService.deleteEmergencyContact(idEmergencyContact);
+    res.json({ message: "Contacto de emergencia eliminado correctamente" , success: true});
   } catch (error) {
     res.status(500).json({
-      mensaje: "Error al eliminar contacto de emergencia",
-      error: error.message
+      message: "Error al eliminar contacto de emergencia",
+      error: error.message, success: false
     });
   }
 };
 
 exports.getAllEmergencyContacts = async (req, res) => {
   try {
-    const contactosEmergencia = await emergencyContactService.getAllEmergencyContacts();
-    res.json(contactosEmergencia);
+    const emergencyContacts = await emergencyContactService.getAllEmergencyContacts();
+    res.json({emergencyContacts, success: true});
   } catch (error) {
     res.status(400).json({
-      mensaje: "Error al obtener todos los contactos de emergencia",
-      error: error.message
+      message: "Error al obtener todos los contactos de emergencia",
+      error: error.message, success: false
     });
   }
 };

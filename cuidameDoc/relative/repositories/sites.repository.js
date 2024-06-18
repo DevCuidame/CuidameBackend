@@ -12,6 +12,9 @@ exports.createSite = async (address, phone, contact, city_id, company_id) => {
 exports.getSite = async (id) => {
   const query = 'SELECT * FROM sites WHERE id = $1';
   const result = await pool.query(query, [id]);
+  if (!result.rows.length) {
+    return null;  
+  }
   const { address, phone, contact, city_id, company_id } = result.rows[0];
   return new Sites(id, address, phone, contact, city_id, company_id);
 };
@@ -19,6 +22,9 @@ exports.getSite = async (id) => {
 exports.getAllSites = async () => {
   const query = 'SELECT * FROM sites';
   const result = await pool.query(query);
+  if (!result.rows.length) {
+    return null;  
+  }
   return result.rows.map(row => {
     const { id, address, phone, contact, city_id, company_id } = row;
     return new Sites(id, address, phone, contact, city_id, company_id);

@@ -1,75 +1,111 @@
 // controllers/HealthInsuranceController.js
+const validator = require("../../../config/validator");
 const healthInsuranceService = require("../services/healthInsurance.service");
 
 exports.createHealthInsurance = async (req, res) => {
   try {
     const { company, address1, address2, city, phone, email } = req.body;
+
+    if (!validator.validateEmail(email)){
+      return res.status(400).json({
+        message: "El email no es válido",
+        success: false
+      });
+    }
+
+    const exists = await healthInsuranceService.getHealthInsuranceByEmail(email)
+
+    if (exists) {
+      return res.status(400).json({
+        message: "Ya existe un seguro con el email proporcionado",
+        success: false
+      });
+    }
+
     const newHealthInsurance = await healthInsuranceService.createHealthInsurance(company, address1, address2, city, phone, email);
-    res.status(200).json({
-      mensaje: "Seguro de salud creado correctamente",
-      nuevoSeguro: newHealthInsurance,
-      exito: true
+    return res.status(200).json({
+      message: "Seguro de salud creado correctamente",
+      newInsurance: newHealthInsurance,
+      success: true
     });
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al crear seguro de salud",
+    return res.status(400).json({
+      message: "Error al crear seguro de salud",
       error: error.message,
-      exito: false
+      success: false
     });
   }
 };
 
 exports.getHealthInsurance = async (req, res) => {
   try {
-    const idSeguro = req.params.id;
-    const seguro = await healthInsuranceService.getHealthInsurance(idSeguro);
-    if (!seguro) {
+    const idInsurance = req.params.id;
+    const insurance = await healthInsuranceService.getHealthInsurance(idInsurance);
+    if (!insurance) {
       return res.status(404).json({ error: "Seguro de salud no encontrado" });
     }
-    res.json(seguro);
+    return res.json({insurance, success: true});
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message , success: false});
   }
 };
 
 exports.updateHealthInsurance = async (req, res) => {
   try {
-    const idSeguro = req.params.id;
+    const idInsurance = req.params.id;
     const { company, address1, address2, city, phone, email } = req.body;
-    const seguroActualizado = await healthInsuranceService.updateHealthInsurance(idSeguro, company, address1, address2, city, phone, email);
-    res.json({
-      mensaje: "Seguro de salud actualizado correctamente",
-      seguroActualizado
+
+
+    if (!validator.validateEmail(email)){
+      return res.status(400).json({
+        message: "El email no es válido",
+        success: false
+      });
+    }
+
+    const exists = await healthInsuranceService.getHealthInsuranceByEmail(email)
+
+    if (exists) {
+      return res.status(400).json({
+        message: "Ya existe un seguro con el email proporcionado",
+        success: false
+      });
+    }
+
+    const updatedInsurance = await healthInsuranceService.updateHealthInsurance(idInsurance, company, address1, address2, city, phone, email);
+    return res.json({
+      message: "Seguro de salud actualizado correctamente",
+      updatedInsurance, success: true
     });
   } catch (error) {
     res.status(400).json({
-      mensaje: "Error al actualizar seguro de salud",
-      error: error.message
+      message: "Error al actualizar seguro de salud",
+      error: error.message, success: false
     });
   }
 };
 
 exports.deleteHealthInsurance = async (req, res) => {
   try {
-    const idSeguro = req.params.id;
-    await healthInsuranceService.deleteHealthInsurance(idSeguro);
-    res.json({ mensaje: "Seguro de salud eliminado correctamente" });
+    const idInsurance = req.params.id;
+    await healthInsuranceService.deleteHealthInsurance(idInsurance);
+    res.json({ message: "Seguro de salud eliminado correctamente" });
   } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al eliminar seguro de salud",
-      error: error.message
+    return res.status(500).json({
+      message: "Error al eliminar seguro de salud",
+      error: error.message, success: false
     });
   }
 };
 
 exports.getAllHealthInsurances = async (req, res) => {
   try {
-    const seguros = await healthInsuranceService.getAllHealthInsurances();
-    res.json(seguros);
+    const insurances = await healthInsuranceService.getAllHealthInsurances();
+    return res.json({insurances, success: true});
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al obtener todos los seguros de salud",
-      error: error.message
+    return res.status(400).json({
+      message: "Error al obtener todos los seguros de salud",
+      error: error.message, success: false
     });
   }
 };

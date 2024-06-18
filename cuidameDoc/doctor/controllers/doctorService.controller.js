@@ -1,51 +1,56 @@
 const doctorServiceService = require('../services/doctorService.service');
 
-exports.crearServicioMedico = async (req, res) => {
+exports.createDoctorService = async (req, res) => {
     try {
-        const { nombre, precio_visita, doctor_id, descuento } = req.body;
-        const nuevoServicioMedico = await doctorServiceService.crearServicioMedico(nombre, precio_visita, doctor_id, descuento);
-        res.status(200).json({ mensaje: "Servicio médico creado correctamente", nuevoServicioMedico, success: true });
+        const { name, visit_price, doctor_id, discount } = req.body;
+        const newMedicalService = await doctorServiceService.createDoctorService(name, visit_price, doctor_id, discount);
+        return res.status(200).json({ message: "Servicio médico creado correctamente", newMedicalService, success: true });
     } catch (error) {
-        res.status(400).json({ mensaje: "Error al crear el servicio médico", error: error.message, success: false });
+        return res.status(400).json({ message: "Error al crear el servicio médico", error: error.message, success: false });
     }
 };
 
-exports.obtenerServicioMedico = async (req, res) => {
+exports.getDoctorService = async (req, res) => {
     try {
-        const servicioMedico = await doctorServiceService.obtenerServicioMedico(req.params.id);
-        if (!servicioMedico) {
-            return res.status(404).json({ mensaje: "Servicio médico no encontrado" });
+        const medicalService = await doctorServiceService.getDoctorService(req.params.id);
+        if (!medicalService) {
+            return res.status(404).json({ message: "Servicio médico no encontrado", success: true });
         }
-        res.json(servicioMedico);
+        return res.status(200).json({medicalService, success: true});
     } catch (error) {
-        res.status(400).json({ mensaje: "Error al obtener el servicio médico", error: error.message });
+        return res.status(400).json({ message: "Error al obtener el servicio médico", error: error.message, success: false});
     }
 };
 
-exports.obtenerTodosLosServiciosMedicos = async (req, res) => {
+exports.getAllDoctorServices = async (req, res) => {
     try {
-        const serviciosMedicos = await doctorServiceService.obtenerTodosLosServiciosMedicos();
-        res.json(serviciosMedicos);
+        const medicalServices = await doctorServiceService.getAllDoctorServices();
+        return res.status(200).json({medicalServices, success: true});
     } catch (error) {
-        res.status(400).json({ mensaje: "Error al obtener los servicios médicos", error: error.message });
+        return res.status(400).json({ message: "Error al obtener los servicios médicos", error: error.message, success: false});
     }
 };
 
-exports.actualizarServicioMedico = async (req, res) => {
+exports.updateDoctorService = async (req, res) => {
     try {
-        const { nombre, precio_visita, doctor_id, descuento } = req.body;
-        const servicioMedicoActualizado = await doctorServiceService.actualizarServicioMedico(req.params.id, nombre, precio_visita, doctor_id, descuento);
-        res.json(servicioMedicoActualizado);
+        const { name, visit_price, doctor_id, discount } = req.body;
+        const updatedMedicalService = await doctorServiceService.updateDoctorService(req.params.id, name, visit_price, doctor_id, discount);
+        return res.status(200).json({updatedMedicalService, success: true});
     } catch (error) {
-        res.status(400).json({ mensaje: "Error al actualizar el servicio médico", error: error.message });
+        return res.status(400).json({ message: "Error al actualizar el servicio médico", error: error.message, success: false});
     }
 };
 
-exports.eliminarServicioMedico = async (req, res) => {
+exports.deleteDoctorService = async (req, res) => {
     try {
-        await doctorServiceService.eliminarServicioMedico(req.params.id);
-        res.json({ mensaje: "Servicio médico eliminado correctamente" });
+        const medicalService = await doctorServiceService.getDoctorService(req.params.id);
+        if (!medicalService) {
+            return res.status(404).json({ message: "Servicio médico no encontrado", success: false });
+        }
+
+        await doctorServiceService.deleteDoctorService(req.params.id);
+        return res.status(200).json({ message: "Servicio médico eliminado correctamente", success: true });
     } catch (error) {
-        res.status(500).json({ mensaje: "Error al eliminar el servicio médico", error: error.message });
+        return res.status(500).json({ message: "Error al eliminar el servicio médico", error: error.message, success: false});
     }
 };
