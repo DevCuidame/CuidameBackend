@@ -1,5 +1,5 @@
 // services/FamiliarRecordsService.js
-const familiarRecordsRepository = require('../repositories/familiarRecords.repository');
+const familiarRecordsRepository = require('../repositories/familarRecords.repository');
 
 exports.createFamiliarRecord = async (medical_consult_id, relative, diagnostic, records, hemorrhagic, thrombotic, oncological) => {
   return familiarRecordsRepository.createFamiliarRecord(medical_consult_id, relative, diagnostic, records, hemorrhagic, thrombotic, oncological);

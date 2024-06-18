@@ -1,5 +1,5 @@
-const VitalSignals = require("../models/VitalSignals");
-const VitalSignalsRepository = require("../repositories/VitalSignalsRepository");
+const VitalSignals = require("../model/vitalSignals.model");
+const VitalSignalsRepository = require("../repositories/vitalSignals.repository");
 
 // Crear señales vitales
 exports.createVitalSignals = async (medicalConsultId, weight, size, imc, bloodPressure, heartFrequency, system, bodyArea, symptom, description) => {

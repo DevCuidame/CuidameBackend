@@ -1,5 +1,5 @@
 const pool = require("../../../utils/connection");
-const VitalSignals = require("../models/VitalSignals");
+const VitalSignals = require("../model/vitalSignals.model");
 
 exports.createVitalSignals = async (medical_consult_id, weight, size, imc, blood_pressure, heart_frequency, system, body_area, symptom, description) => {
   const query = 'INSERT INTO vital_signals (medical_consult_id, weight, size, imc, blood_pressure, heart_frequency, system, body_area, symptom, description) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *';

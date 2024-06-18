@@ -1,5 +1,5 @@
 const pool = require("../../../utils/connection");
-const PaymentBill = require("../models/PaymentBill");
+const PaymentBill = require("../model/paymentBill.model");
 
 exports.createPaymentBill = async (health_insurance_id, relative_id, doctor_service_id) => {
   const query = 'INSERT INTO payment_bills (health_insurance_id, relative_id, doctor_service_id) VALUES ($1, $2, $3) RETURNING *';

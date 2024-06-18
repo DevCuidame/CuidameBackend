@@ -1,5 +1,5 @@
 const pool = require("../../../utils/connection");
-const Bonds = require("../models/Bonds");
+const Bonds = require("../model/bonds.model");
 
 exports.createBond = async (health_insurance_id, name, price) => {
   const query = 'INSERT INTO bonds (health_insurance_id, name, price) VALUES ($1, $2, $3) RETURNING *';

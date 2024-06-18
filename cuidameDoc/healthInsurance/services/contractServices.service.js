@@ -1,5 +1,5 @@
 // services/ContractServiceService.js
-const contractServiceRepository = require('../repositories/contractService.repository');
+const contractServiceRepository = require('../repositories/contractServices.repository');
 
 exports.createContractService = async (contract_id, name, type, price) => {
   return contractServiceRepository.createContractService(contract_id, name, type, price);

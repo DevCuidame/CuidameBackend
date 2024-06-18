@@ -1,5 +1,5 @@
 const pool = require("../../../utils/connection");
-const Diagnostic = require("../models/Diagnostic");
+const Diagnostic = require("../model/diagnostic.model");
 
 exports.createDiagnostic = async (medical_consult_id, diagnostic, epicrisis) => {
   const query = 'INSERT INTO diagnostics (medical_consult_id, diagnostic, epicrisis) VALUES ($1, $2, $3) RETURNING *';

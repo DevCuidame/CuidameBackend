@@ -1,5 +1,5 @@
 const pool = require("../../../utils/connection");
-const Appointments = require("../models/Appointments");
+const Appointments = require("../model/appointments.model");
 
 exports.createAppointment = async (user_id, doctor_id, calendly_event_id, start_time, end_time, status) => {
   const query = 'INSERT INTO appointments (user_id, doctor_id, calendly_event_id, start_time, end_time, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *';

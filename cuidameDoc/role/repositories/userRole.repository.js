@@ -1,5 +1,5 @@
 const pool = require("../../../utils/connection");
-const UserRole = require("../models/UserRole");
+const UserRole = require("../model/userRole.model");
 
 exports.createUserRole = async (user_id, role_id) => {
   const query = 'INSERT INTO user_roles (user_id, role_id) VALUES ($1, $2) RETURNING *';

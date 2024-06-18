@@ -1,5 +1,5 @@
 const pool = require("../../../utils/connection");
-const Sites = require("../models/Sites");
+const Sites = require("../model/sites.model");
 
 exports.createSite = async (address, phone, contact, city_id, company_id) => {
   const query = 'INSERT INTO sites (address, phone, contact, city_id, company_id) VALUES ($1, $2, $3, $4, $5) RETURNING *';

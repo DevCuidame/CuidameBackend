@@ -1,5 +1,5 @@
 const pool = require("../../../utils/connection");
-const Company = require("../models/Company");
+const Company = require("../model/company.model");
 
 exports.createCompany = async (name, address, nit, phone, contact, city_id) => {
   const query = 'INSERT INTO companies (name, address, nit, phone, contact, city_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *';

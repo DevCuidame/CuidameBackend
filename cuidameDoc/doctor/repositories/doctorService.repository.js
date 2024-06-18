@@ -1,5 +1,5 @@
 const pool = require("../../../utils/connection");
-const DoctorService = require("../models/DoctorService");
+const DoctorService = require("../model/doctorService.model");
 
 exports.createDoctorService = async (name, visit_price, doctor_id, discount) => {
   const query = 'INSERT INTO doctor_services (name, visit_price, doctor_id, discount) VALUES ($1, $2, $3, $4) RETURNING *';

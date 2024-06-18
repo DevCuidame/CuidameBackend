@@ -1,5 +1,5 @@
 const pool = require("../../../utils/connection");
-const Habits = require("../models/Habits");
+const Habits = require("../model/habits.model");
 
 exports.createHabits = async (medical_consult_id, smoke, liquor, other) => {
   const query = 'INSERT INTO habits (medical_consult_id, smoke, liquor, other) VALUES ($1, $2, $3, $4) RETURNING *';

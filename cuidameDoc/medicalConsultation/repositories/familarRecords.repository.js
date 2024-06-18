@@ -1,5 +1,5 @@
 const pool = require("../../../utils/connection");
-const FamiliarRecords = require("../models/FamiliarRecords");
+const FamiliarRecords = require("../model/familarRecords.model");
 
 exports.createFamiliarRecord = async (medical_consult_id, relative, diagnostic, records, hemorrhagic, thrombotic, oncological) => {
   const query = 'INSERT INTO familiar_records (medical_consult_id, relative, diagnostic, records, hemorrhagic, thrombotic, oncological) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *';

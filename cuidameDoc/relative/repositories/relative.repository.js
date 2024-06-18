@@ -1,5 +1,5 @@
 const pool = require("../../../utils/connection");
-const Relative = require("../models/Relative");
+const Relative = require("../model/relative.models");
 
 exports.createRelative = async (
   user_id,

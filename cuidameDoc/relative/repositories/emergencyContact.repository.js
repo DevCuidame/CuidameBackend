@@ -1,5 +1,5 @@
 const pool = require("../../../utils/connection");
-const EmergencyContact = require("../models/EmergencyContact");
+const EmergencyContact = require("../model/emergencyContact.model");
 
 exports.createEmergencyContact = async (relative_id, first_name, last_name, phone) => {
   const query = 'INSERT INTO emergency_contacts (relative_id, first_name, last_name, phone) VALUES ($1, $2, $3, $4) RETURNING *';

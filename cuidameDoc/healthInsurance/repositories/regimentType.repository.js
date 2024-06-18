@@ -1,5 +1,5 @@
 const pool = require("../../../utils/connection");
-const RegimentType = require("../models/RegimentType");
+const RegimentType = require("../model/regimentType.model");
 
 exports.createRegimentType = async (health_insurance_id, regiment_type, category, max_value_event) => {
   const query = 'INSERT INTO regiment_types (health_insurance_id, regiment_type, category, max_value_event) VALUES ($1, $2, $3, $4) RETURNING *';

@@ -1,5 +1,5 @@
 const pool = require("../../../utils/connection");
-const GynecoObstetrics = require("../models/GynecoObstetrics");
+const GynecoObstetrics = require("../model/gynecoObstetrics.model");
 
 exports.createGynecoObstetrics = async (medical_consult_id, births, abortions, cesarean, gestations, menstrual_cycles, family_planning) => {
   const query = 'INSERT INTO gyneco_obstetrics (medical_consult_id, births, abortions, cesarean, gestations, menstrual_cycles, family_planning) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *';

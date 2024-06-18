@@ -1,5 +1,5 @@
 const pool = require("../../../utils/connection");
-const Population = require("../models/Population");
+const Population = require("../model/population.model");
 
 exports.createPopulation = async (first_name, last_name, identification_type, identification_number, age, gender, marital_status, place_of_birth, address, category, regiment_type, phone, occupation, status, position, contract_id) => {
   const query = 'INSERT INTO populations (first_name, last_name, identification_type, identification_number, age, gender, marital_status, place_of_birth, address, category, regiment_type, phone, occupation, status, position, contract_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING *';

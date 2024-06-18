@@ -1,5 +1,5 @@
 const pool = require("../../../utils/connection");
-const ModeratorFee = require("../models/ModeratorFee");
+const ModeratorFee = require("../model/moderatorFee.model");
 
 exports.createModeratorFee = async (health_insurance_id, name, price, income_range, category, copayment) => {
   const query = 'INSERT INTO moderator_fees (health_insurance_id, name, price, income_range, category, copayment) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *';
