@@ -14,6 +14,9 @@ CREATE TABLE doctor (
     landline_phone VARCHAR(20) NOT NULL,
     note TEXT NOT NULL,
     rating INT NOT NULL,
+    pub_name VARCHAR(100) NOT NULL,
+    priv_name VARCHAR(100) NOT NULL,
+    file_bs64 TEXT NOT NULL,
     FOREIGN KEY (city_id) REFERENCES townships(id)
 );
 
@@ -91,6 +94,9 @@ CREATE TABLE relative (
     health_insurance_id INT NOT NULL,
     company_id INT NOT NULL,
     status VARCHAR(20) NOT NULL,
+    pub_name VARCHAR(100) NOT NULL,
+    priv_name VARCHAR(100) NOT NULL,
+    file_bs64 TEXT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (doctor_id) REFERENCES doctor(id) ON DELETE CASCADE,
     FOREIGN KEY (health_insurance_id) REFERENCES healthInsurance(id) ON DELETE CASCADE,
@@ -119,6 +125,17 @@ CREATE TABLE emergencyContact (
 -- Índices para la tabla emergencyContact
 CREATE INDEX idx_emergencyContact_relative_id ON emergencyContact(relative_id);
 
+
+
+-- Tabla relativeDocuments
+CREATE TABLE relativeDocuments (
+    id SERIAL PRIMARY KEY,
+    relative_id INT NOT NULL,
+    pub_name VARCHAR(50) NOT NULL,
+    priv_name VARCHAR(50) NOT NULL,
+    file_bs64 TEXT NOT NULL,
+    FOREIGN KEY (relative_id) REFERENCES relative(id)
+);
 
 
 -- Tabla medicalConsultation

@@ -12,7 +12,10 @@ class Doctor {
     medical_specialist,
     landline_phone,
     note,
-    rating
+    rating,
+    pub_name,
+    priv_name,
+    file_bs64
   ) {
     this.id = id;
     this.first_name = first_name;
@@ -27,6 +30,9 @@ class Doctor {
     this.landline_phone = landline_phone;
     this.note = note;
     this.rating = rating;
+    this.pub_name = pub_name,
+    this.priv_name = priv_name,
+    this.file_bs64 = file_bs64
   }
 }
 
