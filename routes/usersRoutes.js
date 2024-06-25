@@ -33,6 +33,7 @@ module.exports = (app, upload, uploadVaccine) => {
   );
   app.get("/api/users/retrieve", UsersController.retrieveInfo);
   app.post("/api/users/registerUser", UsersController.registerUser);
+  app.post("/api/users/signup", UsersController.registerUserFromDoc);
   app.post("/api/users/license", UsersController.getLicense);
   app.post(
     "/api/users/resendEmail",

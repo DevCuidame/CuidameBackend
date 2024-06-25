@@ -8,6 +8,8 @@ const crypto = require("crypto");
 const HttpStatus = require("http-status-codes");
 const fs = require("fs/promises");
 
+const userRoleService = require('../cuidameDoc/role/services/userRole.service')
+
 function generateHash(password) {
   return crypto.createHash("md5").update(password).digest("hex");
 }
@@ -765,6 +767,92 @@ module.exports = {
       return res.status(501).json({
         success: false,
         message: "Hubo un error con el registro de los contactos.",
+        error: error,
+      });
+    }
+  },
+
+  async registerUserFromDoc(req, res, next) {
+    try {
+      const user = req.body;
+      user.name = user.firstname;
+      delete user.firstname;
+      const code = req.body.code;
+
+      const exists = await User.findByIdNum(user.numberID);
+
+      if (exists) {
+        return res.status(400).json({
+          success: false,
+          message: "Número de documento no válido.",
+        });
+      }
+
+      const usuarioExiste = await User.findByEmail(user.email);
+
+      if (usuarioExiste) {
+        return res.status(400).json({
+          success: false,
+          message: "Correo no válido",
+        });
+      }
+
+      const data = await User.create(user);
+      const id = parseInt(data);
+      //Creamos un contactos por defecto
+      await User.createContact({
+        idUsuario: data.id,
+        nombre1: user.name,
+        telefono1: user.phone,
+      });
+
+      if (code != "") {
+        let toBas4 = Buffer.from(code).toString("base64");
+        const charToReplace = ["=", "%", "?", "/", "+"];
+        charToReplace.forEach((x, i) => {
+          toBas4 = toBas4.replaceAll(x, "");
+        });
+        await User.updateHashCode(toBas4, code);
+      }
+
+      try {
+        const emailToken = jwt.sign(
+          {
+            user: data.id,
+          },
+          keys.emailSecret,
+          {
+            expiresIn: "1d",
+          }
+        );
+
+        const url = `https://api.cuidame.tech/api/users/confirmation/${emailToken}`;
+        await transporter.sendMail({
+          to: user.email,
+          subject: "¡Confirmación email Cuídame!",
+          html: `Hola ${user.name} Gracias por adquirir nuestros servicios, por favor para confirmar tu email haz click en el siguiente enlace: <a href="${url}">${url}</a><br><p>Este enlace expira pasadas 24 horas, en ese caso por favor inicie sesión para recibir un nuevo correo de verificación.</p>`,
+        });
+      } catch (e) {
+        console.log(e);
+      }
+
+      try {
+        const defaultRoleId = 3; 
+        await userRoleService.createUserRole(data.id, defaultRoleId);
+      } catch (roleError) {
+        console.log(`Error al asignar rol: ${roleError}`);
+      }
+
+      return res.status(201).json({
+        success: true,
+        message: "Se ha guardado la informacion correctamente.",
+        data: data.id,
+      });
+    } catch (error) {
+      console.log(`Error: ${error}`);
+      return res.status(400).json({
+        success: false,
+        message: "Error con el registro del usuario.",
         error: error,
       });
     }

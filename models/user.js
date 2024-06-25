@@ -255,6 +255,27 @@ User.findByEmail = (email) => {
   return db.oneOrNone(sql, email);
 };
 
+User.findByIdNum = (numberID) => {
+  const sql = `
+    SELECT
+        id,
+        hashcode,
+        name,
+        lastname,
+        typeID,
+        numberID,
+        phone,
+        email,
+        password,
+        verificado
+    FROM
+        users
+    WHERE
+        numberID = $1    
+    `;
+  return db.oneOrNone(sql, numberID);
+};
+
 User.confirmEmail = (idUser) => {
   const sql = `
     UPDATE
@@ -297,6 +318,51 @@ User.create = (user) => {
   return db.oneOrNone(sql, [
     user.code || null,
     user.name,
+    user.lastname,
+    user.typeID,
+    user.numberID,
+    user.phone,
+    user.email,
+    user.parentesco,
+    user.password,
+    user.city_id,
+    user.address,
+    false,
+    new Date(),
+    new Date(),
+  ]);
+};
+
+User.createUserFromDoc = (user) => {
+  const myPasswordHashed = crypto
+    .createHash("md5")
+    .update(user.password)
+    .digest("hex");
+  user.password = myPasswordHashed;
+
+  const sql = `
+    INSERT INTO 
+        users(
+            code,
+            name,
+            lastname,
+            typeID,
+            numberID,
+            phone,
+            email,
+            parentesco,
+            password,
+            city_id,
+            address,
+            verificado,
+            created_at,
+            updated_at
+        )
+    VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING id
+    `;
+  return db.oneOrNone(sql, [
+    user.code || null,
+    user.firstname,
     user.lastname,
     user.typeID,
     user.numberID,
