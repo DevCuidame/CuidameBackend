@@ -41,6 +41,11 @@ module.exports = (app, upload, uploadVaccine) => {
     UsersController.resendEmail
   );
 
+  app.post(
+    "/api/users/resend-email",
+    UsersController.resendEmailFromDoc
+  );
+
   app.get("/api/users/confirmation/:token", UsersController.verifyUserEmail); //Confirm email to be done
   app.post("/api/users/deleteUser", UsersController.deleteUser);
   app.post(
@@ -64,6 +69,7 @@ module.exports = (app, upload, uploadVaccine) => {
   // app.get('/api/users/verification', UsersController.verifyUserEmail);
 
   app.post("/api/users/login", UsersController.login);
+  app.post("/api/users/loginuser", UsersController.loginFromDoc);
   app.post("/api/users/bandAuth", AuthController.bandAuth);
 
   app.get("/api/auth/insertMed", AuthController.ingresoMedico);

@@ -1,8 +1,11 @@
 const axios = require("axios");
 const QR = require("../../models/qr");
+const db = require("../../utils/connection");
 
 const ACCESS_TOKEN = process.env.API_FACEBOOK_TOKEN;
 const PHONE_NUMBER_ID = "332324036632647";
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const sendMessage = async (to, message, locationUrl) => {
   const url = `https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`;
@@ -120,7 +123,145 @@ const sendPetNotification = async (req, res) => {
   }
 };
 
+const sendWelcomeMessage = async (to) => {
+  const url = `https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`;
+  const data = {
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to: to,
+    type: "interactive",
+    interactive: {
+      type: "cta_url",
+
+      header: {
+        type: "text",
+        text: "CuídameBot",
+      },
+
+      body: {
+        text: "Hola 👋 Gracias por conectar con nosotros. Por favor, te invitamos a seguir nuestra página de Instagram para las últimas actualizaciones. ",
+      },
+
+      footer: {
+        text: "Cuídame Tech",
+      },
+      action: {
+        name: "cta_url",
+        parameters: {
+          display_text: "Instagram",
+          url: "https://www.instagram.com/cuidame.tech/",
+        },
+      },
+    },
+  };
+
+  try {
+    const response = await axios.post(url, data, {
+      headers: {
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("Welcome message sent:", response.data);
+  } catch (error) {
+    console.error("Error sending welcome message:", error.response.data);
+  }
+};
+
+const sendWelcomeMessagesToAll = async (req, res) => {
+  try {
+    const users = await db.query("SELECT phone FROM users");
+    const contacts = await db.query(
+      "SELECT telefono1, telefono2, telefono3 FROM contactos"
+    );
+
+    const phoneNumbers = new Set();
+
+    users.rows.forEach((user) => {
+      if (user.phone) {
+        phoneNumbers.add(user.phone);
+      }
+    });
+
+    contacts.rows.forEach((contact) => {
+      if (contact.telefono1) {
+        phoneNumbers.add(contact.telefono1);
+      }
+      if (contact.telefono2) {
+        phoneNumbers.add(contact.telefono2);
+      }
+      if (contact.telefono3) {
+        phoneNumbers.add(contact.telefono3);
+      }
+    });
+
+    for (let phone of phoneNumbers) {
+      if (phone) {
+        await sendTemplateMessage(`57${phone}`);
+        await sleep(200);
+      }
+    }
+    console.log("🚀 ~ sendWelcomeMessagesToAll ~ phoneNumbers:", phoneNumbers);
+
+    res.status(200).json({
+      message: "Welcome messages sent",
+      success: true,
+      phones: phoneNumbers,
+    });
+  } catch (error) {
+    console.error("Error sending welcome messages:", error);
+    res.status(500).json({
+      message: "Error sending welcome messages",
+      success: false,
+    });
+  }
+};
+
+const sendTemplateMessage = async (to) => {
+  const url = `https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`;
+  const data = {
+    messaging_product: "whatsapp",
+    to: to,
+    type: "template",
+    template: {
+      name: "instagram",
+      language: {
+        code: "en_US",
+      },
+      components: [
+        {
+          type: "header",
+          parameters: [
+            {
+              type: "image",
+              image: {
+                link: "https://cuidame.tech/wp-content/uploads/2023/02/NEON-2048x1536.png",
+              },
+            },
+          ],
+        },
+      ],
+    },
+  };
+
+  try {
+    const response = await axios.post(url, data, {
+      headers: {
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    });
+    console.log(`Template message sent to ${to}:`, response.data);
+  } catch (error) {
+    console.error(
+      `Error sending template message to ${to}:`,
+      error.response ? error.response.data : error
+    );
+  }
+};
+
 module.exports = {
   sendNotification,
   sendPetNotification,
+  sendWelcomeMessagesToAll,
 };

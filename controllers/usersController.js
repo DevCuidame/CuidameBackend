@@ -8,7 +8,7 @@ const crypto = require("crypto");
 const HttpStatus = require("http-status-codes");
 const fs = require("fs/promises");
 
-const userRoleService = require('../cuidameDoc/role/services/userRole.service')
+const userRoleService = require("../cuidameDoc/role/services/userRole.service");
 
 function generateHash(password) {
   return crypto.createHash("md5").update(password).digest("hex");
@@ -772,13 +772,80 @@ module.exports = {
     }
   },
 
+  async loginFromDoc(req, res, next) {
+    try {
+      const email = req.body.email.toLowerCase();
+      const password = req.body.password;
+      const myUser = await User.findByEmailAndRole(email);
+
+      if (!myUser) {
+        return res.status(401).json({
+          success: false,
+          message: "Usuario y/o contraseña no reconocidos",
+        });
+      }
+
+      if (User.isPasswordMatched(password, myUser.password)) {
+        const token = jwt.sign(
+          { id: myUser.id, email: myUser.email },
+          keys.secretOrKey,
+          {
+            //    expiresIn: (60*60*24)
+          }
+        );
+        const data = {
+          id: myUser.id,
+          hashcode: myUser.hashcode,
+          name: myUser.name,
+          lastname: myUser.lastname,
+          typeID: myUser.typeid,
+          numberID: myUser.numberid,
+          email: myUser.email,
+          phone: myUser.phone,
+          role_id: myUser.role_id,
+          session_token: `JWT ${token}`,
+          service: myUser.service,
+        };
+
+        if (!myUser.verificado) {
+          return res.status(401).json({
+            success: true,
+            message: "emailnoverificado",
+            data,
+          });
+        }
+
+        await User.updateToken(myUser.id, `JWT ${token}`);
+
+        return res.status(201).json({
+          success: true,
+          message: "Se ha autenticado correctamente",
+          data: data,
+        });
+      } else {
+        return res.status(401).json({
+          success: false,
+          message: "Usuario y/o contraseña no reconocidos",
+          data: {},
+        });
+      }
+    } catch (error) {
+      console.log(`Error: ${error}`);
+      return res.status(501).json({
+        success: false,
+        message: "Error al momento de hacer el login",
+        error: error,
+      });
+    }
+  },
+
   async registerUserFromDoc(req, res, next) {
     try {
       const user = req.body;
+      user.email = user.email.toLowerCase();
       user.name = user.firstname;
       delete user.firstname;
       const code = req.body.code;
-
       const exists = await User.findByIdNum(user.numberID);
 
       if (exists) {
@@ -837,7 +904,7 @@ module.exports = {
       }
 
       try {
-        const defaultRoleId = 3; 
+        const defaultRoleId = 3;
         await userRoleService.createUserRole(data.id, defaultRoleId);
       } catch (roleError) {
         console.log(`Error al asignar rol: ${roleError}`);
@@ -1059,7 +1126,7 @@ module.exports = {
         const medL = med.length;
         const alergiasL = alergias.length;
         var data = [...med, ...alergias, medL, alergiasL];
-        console.log(data)
+        console.log(data);
       }
 
       if (ref == "vacunas") {
@@ -1205,6 +1272,46 @@ module.exports = {
         success: false,
         message: "Hubo un error con el registro de la información.",
         error: error,
+      });
+    }
+  },
+
+  async resendEmailFromDoc(req, res, next) {
+    const {email} = req.body;
+    const user = await User.findByEmail(email);
+
+    try {
+      const emailToken = jwt.sign(
+        {
+          user: user.id,
+        },
+        keys.emailSecret,
+        {
+          expiresIn: "1d",
+        }
+      );
+
+      const infoEmail = {
+        user: user,
+        urlToken: `https://api.cuidame.tech/api/users/confirmation/${emailToken}`,
+      };
+
+      const correoEnviado = User.sendEmail(infoEmail);
+
+      if (correoEnviado) {
+        return res.status(201).json({
+          success: true,
+          message: "Se reenvió el correo correctamente",
+        });
+      } else {
+        throw "Error enviando correo";
+      }
+    } catch (e) {
+      console.log(e);
+      return res.status(501).json({
+        success: false,
+        message: "Hubo un error con el envío del correo",
+        error: e,
       });
     }
   },

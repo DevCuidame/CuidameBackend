@@ -4,5 +4,5 @@ const whatsappController = require('../../controllers/whatsapp/whatsapp.controll
 
 router.get('/sendNot', whatsappController.sendNotification);
 router.get('/sendPetNotification', whatsappController.sendPetNotification);
-
+router.get('/sendWelcomeMessageToAll', whatsappController.sendWelcomeMessagesToAll);
 module.exports = router;

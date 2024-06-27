@@ -255,6 +255,32 @@ User.findByEmail = (email) => {
   return db.oneOrNone(sql, email);
 };
 
+User.findByEmailAndRole = (email) => {
+  const sql = `
+    SELECT
+    u.id,
+    u.hashcode,
+    u.name,
+    u.lastname,
+    u.typeID,
+    u.numberID,
+    u.phone,
+    u.email,
+    u.password,
+    u.verificado,
+    ur.role_id
+      FROM
+          users u
+      INNER JOIN
+          userrole ur
+      ON
+          u.id = ur.user_id
+      WHERE
+          u.email = $1;
+    `;
+  return db.oneOrNone(sql, email);
+};
+
 User.findByIdNum = (numberID) => {
   const sql = `
     SELECT

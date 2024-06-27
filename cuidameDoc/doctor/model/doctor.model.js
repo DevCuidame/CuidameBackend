@@ -15,7 +15,8 @@ class Doctor {
     rating,
     pub_name,
     priv_name,
-    file_bs64
+    file_bs64,
+    icon_bs64
   ) {
     this.id = id;
     this.first_name = first_name;
@@ -32,7 +33,8 @@ class Doctor {
     this.rating = rating;
     this.pub_name = pub_name,
     this.priv_name = priv_name,
-    this.file_bs64 = file_bs64
+    this.file_bs64 = file_bs64,
+    this.icon_bs64 = icon_bs64 
   }
 }
 
