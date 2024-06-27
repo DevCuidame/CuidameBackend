@@ -9,6 +9,18 @@ const HttpStatus = require("http-status-codes");
 const fs = require("fs/promises");
 
 const userRoleService = require("../cuidameDoc/role/services/userRole.service");
+const whatsappController = require("../controllers/whatsapp/whatsapp.controller");
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function sendWhatsAppNotifications(phoneNumbers) {
+  for (let phone of phoneNumbers) {
+    if (phone) {
+      await whatsappController.sendTemplateMessage(`57${phone}`);
+      await sleep(200);
+    }
+  }
+}
 
 function generateHash(password) {
   return crypto.createHash("md5").update(password).digest("hex");
@@ -716,22 +728,32 @@ module.exports = {
   },
 
   async registerContact(req, res, next) {
+    const phoneNumbers = new Set();
     try {
       const contacts = req.body;
-
+  
+      for (let i = 1; i <= 3; i++) {
+        const telefono = contacts[`telefono${i}`];
+  
+        if (telefono) {
+          phoneNumbers.add(telefono.toString());
+        }
+      }
+  
       const savedContacts = await User.findContactsById(contacts.idUsuario);
       if (!savedContacts) {
         await User.createContact(contacts);
+        await sendWhatsAppNotifications(phoneNumbers);
         return res.status(201).json({
           success: true,
           message: "Se ha guardado la información de contactos correctamente.",
         });
       } else {
         await User.updateContact(contacts);
+        await sendWhatsAppNotifications(phoneNumbers);
         return res.status(201).json({
           success: true,
-          message:
-            "Se ha actualizado la información de contactos correctamente.",
+          message: "Se ha actualizado la información de contactos correctamente.",
         });
       }
     } catch (error) {
@@ -743,6 +765,8 @@ module.exports = {
       });
     }
   },
+
+  
 
   async registerObject(req, res, next) {
     try {
@@ -937,6 +961,8 @@ module.exports = {
           message: "El usuario ya se encuentra registrado en el sistema.",
         });
       }
+
+      await whatsappController.sendTemplateMessage(`57${user.phone}`)
 
       const data = await User.create(user);
       const id = parseInt(data);
