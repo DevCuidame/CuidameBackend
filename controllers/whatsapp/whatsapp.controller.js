@@ -16,16 +16,13 @@ const sendMessage = async (to, message, locationUrl) => {
     type: "interactive",
     interactive: {
       type: "cta_url",
-
       header: {
         type: "text",
         text: "CuídameBot",
       },
-
       body: {
         text: message,
       },
-
       footer: {
         text: "Cuídame Tech",
       },
@@ -46,9 +43,71 @@ const sendMessage = async (to, message, locationUrl) => {
         "Content-Type": "application/json",
       },
     });
-    console.log("Message sent:", response.data);
+    console.log(`Mensaje enviado a ${to}: ${response.status}`);
   } catch (error) {
-    console.error("Error sending message:", error.response.data);
+    if (error.response && error.response.data && error.response.data.error && error.response.data.error.error_data && error.response.data.error.error_data.details.includes("24 hours")) {
+      await sendReengagementMessage(to, message, locationUrl);
+    } else {
+      console.error(`Error al enviar mensaje a ${to}:`, error.response?.data || error.message);
+    }
+  }
+};
+
+const sendReengagementMessage = async (to, message, locationUrl) => {
+  const url = `https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`;
+  const data = {
+    messaging_product: "whatsapp",
+    to: to,
+    type: "template",
+    template: {
+      name: "reengagement_template",
+      language: {
+        code: "en_US",
+      },
+      components: [
+        {
+          type: "header",
+          parameters: [
+            {
+              type: "text",
+              text: "CuídameBot",
+            },
+          ],
+        },
+        {
+          type: "body",
+          parameters: [
+            {
+              type: "text",
+              text: message,
+            },
+          ],
+        },
+        {
+          type: "button",
+          sub_type: "url",
+          index: "0",
+          parameters: [
+            {
+              type: "text",
+              text: locationUrl,
+            },
+          ],
+        },
+      ],
+    },
+  };
+
+  try {
+    const response = await axios.post(url, data, {
+      headers: {
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    });
+    console.log(`Template message sent to ${to}:`, response.data);
+  } catch (error) {
+    console.error(`Error sending template message to ${to}:`, error.response ? error.response.data : error);
   }
 };
 
@@ -198,6 +257,7 @@ const sendWelcomeMessagesToAll = async (req, res) => {
     for (let phone of phoneNumbers) {
       if (phone) {
         await sendTemplateMessage(`57${phone}`);
+        // await sendDailyMessage(`57${phone}`);
         await sleep(200);
       }
     }
@@ -259,6 +319,34 @@ const sendTemplateMessage = async (to) => {
     );
   }
 };
+
+const sendDailyMessage = async (to) => {
+  const url = `https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`;
+  const data = {
+    messaging_product: "whatsapp",
+    to: to,
+    type: "template",
+    template: {
+      name: "daily_message", 
+      language: {
+        code: "en"
+      }
+    }
+  };
+
+  try {
+    const response = await axios.post(url, data, {
+      headers: {
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("Message sent:", response.data);
+  } catch (error) {
+    console.error("Error sending message:", error.response.data);
+  }
+};
+
 
 module.exports = {
   sendNotification,

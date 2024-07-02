@@ -21,7 +21,7 @@ Pet.getOneQr = () => {
   const sql = `SELECT c.hashcode
   FROM codes c
   LEFT JOIN mascotas m ON c.hashcode = m.hashcode
-  WHERE m.hashcode IS NULL and c.license = 'Pets' and c.agreement = 'H&H' and c.status = 'inactive'
+  WHERE m.hashcode IS NULL and c.license = 'Pets' and c.agreement = 'Basic' and c.status = 'inactive'
   LIMIT 1;
   `;
   return db.oneOrNone(sql);

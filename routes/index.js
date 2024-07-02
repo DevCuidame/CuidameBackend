@@ -43,6 +43,8 @@ const sitesRouter = require("../cuidameDoc/relative/routes/sites.router");
 const roleRouter = require("../cuidameDoc/role/routes/role.router");
 const userRoleRouter = require("../cuidameDoc/role/routes/userRole.router");
 
+const doctorRatingRouter = require("../cuidameDoc/doctor/routes/doctorRating.router");
+
 function routerApi(app) {
   const router = express.Router();
   app.use("/api", router);
@@ -62,6 +64,7 @@ function routerApi(app) {
   //Doctor
   router.use("/doctor", doctorRouter);
   router.use("/doctorservice", doctorServiceRouter);
+  router.use("/doctorRating", doctorRatingRouter);
 
   //HealthInsurance
   router.use("/bonds", bondsRouter);

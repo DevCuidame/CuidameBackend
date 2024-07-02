@@ -16,11 +16,17 @@ Qr.getAgreements = () => {
 
 Qr.getPetAgreements = () => {
   const sql = `
-    select agreement 
-    from codes 
-    where license = 'Pets' 
-    AND agreement IS NOT NULL 
-    GROUP BY agreement;
+    SELECT agreement
+FROM codes
+WHERE license = 'Pets'
+  AND agreement IS NOT NULL
+GROUP BY agreement
+ORDER BY CASE
+    WHEN agreement = 'Free' THEN 1
+    WHEN agreement = 'Basic' THEN 2
+    WHEN agreement = 'Premium' THEN 3
+END;
+
       `;
 
   return db.manyOrNone(sql);

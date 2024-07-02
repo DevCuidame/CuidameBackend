@@ -1,4 +1,6 @@
 
+
+
 -- Tabla doctor
 CREATE TABLE doctor (
     id SERIAL PRIMARY KEY,
@@ -23,6 +25,21 @@ CREATE TABLE doctor (
 -- Índices para la tabla doctor
 CREATE INDEX idx_doctor_city_id ON doctor(city_id);
 CREATE INDEX idx_doctor_name ON doctor(first_name, last_name);
+
+CREATE TABLE user_ratings (
+    id SERIAL PRIMARY KEY,
+    rater_user_id BIGINT NOT NULL,
+    rated_doctor_id BIGINT NOT NULL,
+    rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (rater_user_id, rated_user_id),
+    FOREIGN KEY (rater_user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (rated_user_id) REFERENCES doctor(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_rated_user_id ON user_ratings (rated_user_id);
+
 
 
 -- Tabla healthInsurance

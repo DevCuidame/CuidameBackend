@@ -557,3 +557,13 @@ CREATE TABLE provider (
     status BOOLEAN NOT NULL,
     FOREIGN KEY (city) REFERENCES townships(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
+
+
+UPDATE codes SET agreement = 'Premium' WHERE license = 'Pets' AND agreement = 'H&H';
+UPDATE codes SET agreement = 'Basic' WHERE license = 'Pets' AND agreement = 'SeguroPeludo';
+UPDATE codes SET agreement = 'Free' WHERE license = 'Pets' AND agreement = 'IKE';
+
+
+
+UPDATE codes SET agreement = 'Premium' WHERE hashcode IN (SELECT hashcode FROM mascotas where id_usuario IN (22, 39, 5, 7, 34, 23))
+UPDATE codes SET status = 'active' WHERE hashcode IN (SELECT hashcode FROM mascotas);
