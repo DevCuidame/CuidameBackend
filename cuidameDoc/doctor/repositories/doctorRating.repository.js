@@ -1,4 +1,4 @@
-const pool = require('../db');
+const pool = require('../../../utils/connection');
 
 exports.createRating = async (rater_user_id, rated_doctor_id, rating) => {
   const query = `

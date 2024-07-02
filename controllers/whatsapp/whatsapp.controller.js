@@ -11,28 +11,44 @@ const sendMessage = async (to, message, locationUrl) => {
   const url = `https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`;
   const data = {
     messaging_product: "whatsapp",
-    recipient_type: "individual",
     to: to,
-    type: "interactive",
-    interactive: {
-      type: "cta_url",
-      header: {
-        type: "text",
-        text: "CuídameBot",
+    type: "template",
+    template: {
+      name: "reengagement_template",
+      language: {
+        code: "en_US",
       },
-      body: {
-        text: message,
-      },
-      footer: {
-        text: "Cuídame Tech",
-      },
-      action: {
-        name: "cta_url",
-        parameters: {
-          display_text: "Ubicación",
-          url: locationUrl,
+      components: [
+        {
+          type: "header",
+          parameters: [
+            {
+              type: "text",
+              text: "CuídameBot",
+            },
+          ],
         },
-      },
+        {
+          type: "body",
+          parameters: [
+            {
+              type: "text",
+              text: message,
+            },
+          ],
+        },
+        {
+          type: "button",
+          sub_type: "url",
+          index: "0",
+          parameters: [
+            {
+              type: "text",
+              text: locationUrl,
+            },
+          ],
+        },
+      ],
     },
   };
 
@@ -45,11 +61,10 @@ const sendMessage = async (to, message, locationUrl) => {
     });
     console.log(`Mensaje enviado a ${to}: ${response.status}`);
   } catch (error) {
-    if (error.response && error.response.data && error.response.data.error && error.response.data.error.error_data && error.response.data.error.error_data.details.includes("24 hours")) {
-      await sendReengagementMessage(to, message, locationUrl);
-    } else {
-      console.error(`Error al enviar mensaje a ${to}:`, error.response?.data || error.message);
-    }
+    console.error(
+      `Error al enviar mensaje a ${to}:`,
+      error.response?.data || error.message
+    );
   }
 };
 
@@ -107,7 +122,10 @@ const sendReengagementMessage = async (to, message, locationUrl) => {
     });
     console.log(`Template message sent to ${to}:`, response.data);
   } catch (error) {
-    console.error(`Error sending template message to ${to}:`, error.response ? error.response.data : error);
+    console.error(
+      `Error sending template message to ${to}:`,
+      error.response ? error.response.data : error
+    );
   }
 };
 
@@ -327,11 +345,11 @@ const sendDailyMessage = async (to) => {
     to: to,
     type: "template",
     template: {
-      name: "daily_message", 
+      name: "daily_message",
       language: {
-        code: "en"
-      }
-    }
+        code: "en",
+      },
+    },
   };
 
   try {
@@ -347,10 +365,9 @@ const sendDailyMessage = async (to) => {
   }
 };
 
-
 module.exports = {
   sendNotification,
   sendPetNotification,
   sendWelcomeMessagesToAll,
-  sendTemplateMessage
+  sendTemplateMessage,
 };
