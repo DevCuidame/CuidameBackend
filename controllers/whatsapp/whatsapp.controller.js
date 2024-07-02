@@ -21,12 +21,7 @@ const sendMessage = async (to, message, locationUrl) => {
       components: [
         {
           type: "header",
-          parameters: [
-            {
-              type: "text",
-              text: "CuídameBot",
-            },
-          ],
+          parameters: [],
         },
         {
           type: "body",
