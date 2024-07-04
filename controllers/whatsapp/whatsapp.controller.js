@@ -1,148 +1,63 @@
-const axios = require("axios");
+const twilio = require("twilio");
 const QR = require("../../models/qr");
 const db = require("../../utils/connection");
 
-const ACCESS_TOKEN = process.env.API_FACEBOOK_TOKEN;
-const PHONE_NUMBER_ID = "332324036632647";
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client = new twilio(accountSid, authToken);
+const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-const sendMessage = async (to, message, locationUrl) => {
-  const url = `https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`;
-  const data = {
-    messaging_product: "whatsapp",
-    to: to,
-    type: "template",
-    template: {
-      name: "reengagement_template",
-      language: {
-        code: "en_US",
-      },
-      components: [
-        {
-          type: "header",
-          parameters: [],
-        },
-        {
-          type: "body",
-          parameters: [
-            {
-              type: "text",
-              text: message,
-            },
-          ],
-        },
-        {
-          type: "button",
-          sub_type: "url",
-          index: "0",
-          parameters: [
-            {
-              type: "text",
-              text: locationUrl,
-            },
-          ],
-        },
-      ],
-    },
-  };
-
+const sendPetMessage = async (to, contactName, petName, locationUrl) => {
   try {
-    const response = await axios.post(url, data, {
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-        "Content-Type": "application/json",
-      },
+    const formattedNumber = `+57${to}`; 
+    const message = await client.messages.create({
+      from: TWILIO_PHONE_NUMBER,
+      to: formattedNumber,
+      body: `Hola ${contactName},\nTu mascota, ${petName} fue escaneado/a en esta ubicación: ${locationUrl}`,
     });
-    console.log(`Mensaje enviado a ${to}: ${response.status}`);
+    console.log(`Mensaje enviado a ${formattedNumber}: ${message.sid}`);
   } catch (error) {
-    console.error(
-      `Error al enviar mensaje a ${to}:`,
-      error.response?.data || error.message
-    );
+    console.error(`Error al enviar mensaje a ${to}:`, error.message);
   }
 };
 
-const sendReengagementMessage = async (to, message, locationUrl) => {
-  const url = `https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`;
-  const data = {
-    messaging_product: "whatsapp",
-    to: to,
-    type: "template",
-    template: {
-      name: "reengagement_template",
-      language: {
-        code: "en_US",
-      },
-      components: [
-        {
-          type: "header",
-          parameters: [
-            {
-              type: "text",
-              text: "CuídameBot",
-            },
-          ],
-        },
-        {
-          type: "body",
-          parameters: [
-            {
-              type: "text",
-              text: message,
-            },
-          ],
-        },
-        {
-          type: "button",
-          sub_type: "url",
-          index: "0",
-          parameters: [
-            {
-              type: "text",
-              text: locationUrl,
-            },
-          ],
-        },
-      ],
-    },
-  };
 
+const sendPersonaMessage = async (to, contactName, patientName, locationUrl) => {
   try {
-    const response = await axios.post(url, data, {
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-        "Content-Type": "application/json",
-      },
+    const formattedNumber = `+57${to}`; 
+    const message = await client.messages.create({
+      from: TWILIO_PHONE_NUMBER, 
+      to: formattedNumber, 
+      body: `Hola ${contactName}, tu familiar, \n${patientName}, fue escaneado/a en esta ubicación: ${locationUrl}`,
     });
-    console.log(`Template message sent to ${to}:`, response.data);
+    console.log(`Mensaje enviado a ${to}: ${message.sid}`);
   } catch (error) {
-    console.error(
-      `Error sending template message to ${to}:`,
-      error.response ? error.response.data : error
-    );
+    console.error(`Error al enviar mensaje a ${to}:`, error.message);
   }
 };
 
 const sendNotification = async (req, res) => {
-  const { code_request, latitude, longitude, objeto, mascota } = req.query;
+  const { code_request, latitude, longitude } = req.query;
   const data = await QR.getByCode(code_request);
 
   if (data) {
     const contacts = await QR.findContacts(data.id);
-    const mensajeEspanol = objeto
-      ? `${data.name}, tú código QR ha sido escaneado en tu objeto: ${objeto}.`
-      : mascota
-      ? `${data.name}, tú código QR en tu mascota, ${mascota} ha sido escaneado!`
-      : `${data.name}, el código QR ha sido escaneado.`;
-
     const locationUrl = `https://maps.google.com/?q=${latitude},${longitude}`;
-    const mensaje = `${mensajeEspanol} Toca para mirar la ubicación`;
-    let telefonos = Object.values(contacts);
 
-    for (let telefono of telefonos) {
-      if (telefono) {
-        await sendMessage(`57${telefono}`, mensaje, locationUrl);
+    let telefonos = [
+      { nombre: contacts.nombre1, telefono: contacts.telefono1 },
+      { nombre: contacts.nombre2, telefono: contacts.telefono2 },
+      { nombre: contacts.nombre3, telefono: contacts.telefono3 },
+    ];
+
+    for (let contact of telefonos) {
+      if (contact.telefono) {
+        await sendPersonaMessage(
+          contact.telefono,
+          contact.nombre,
+          data.name,
+          locationUrl
+        );
       }
     }
 
@@ -160,25 +75,28 @@ const sendNotification = async (req, res) => {
 };
 
 const sendPetNotification = async (req, res) => {
-  const { code_request, latitude, longitude, objeto, mascota } = req.query;
+  const { code_request, latitude, longitude } = req.query;
   const data = await QR.findPetByCode(code_request);
 
   if (data) {
     const contacts = await QR.findUserContact(data.id);
-    const mensajeEspanol = objeto
-      ? `${data.name}, tú código QR ha sido escaneado en tu objeto: ${objeto}.`
-      : mascota
-      ? `${data.name}, el código QR de tu mascota, *${mascota}*, ha sido escaneado!`
-      : `${data.name}, el código QR ha sido escaneado.`;
-
+    console.log("🚀 ~ sendPetNotification ~ contacts:", contacts)
     const locationUrl = `https://maps.google.com/?q=${latitude},${longitude}`;
-    const mensaje = `${mensajeEspanol} Toca para mirar la ubicación`;
 
-    let telefonos = Object.values(contacts);
+    let telefonos = [
+      { nombre: contacts.nombre1, telefono: contacts.telefono1 },
+      { nombre: contacts.nombre2, telefono: contacts.telefono2 },
+      { nombre: contacts.nombre3, telefono: contacts.telefono3 },
+    ];
 
-    for (let telefono of telefonos) {
-      if (telefono) {
-        await sendMessage(`57${telefono}`, mensaje, locationUrl);
+    for (let contact of telefonos) {
+      if (contact.telefono) {
+        await sendPetMessage(
+          contact.telefono,
+          contact.nombre,
+          data.nombre,
+          locationUrl
+        );
       }
     }
 
@@ -192,51 +110,6 @@ const sendPetNotification = async (req, res) => {
       message: "Hubo un error al enviar alguna notificación",
       success: false,
     });
-  }
-};
-
-const sendWelcomeMessage = async (to) => {
-  const url = `https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`;
-  const data = {
-    messaging_product: "whatsapp",
-    recipient_type: "individual",
-    to: to,
-    type: "interactive",
-    interactive: {
-      type: "cta_url",
-
-      header: {
-        type: "text",
-        text: "CuídameBot",
-      },
-
-      body: {
-        text: "Hola 👋 Gracias por conectar con nosotros. Por favor, te invitamos a seguir nuestra página de Instagram para las últimas actualizaciones. ",
-      },
-
-      footer: {
-        text: "Cuídame Tech",
-      },
-      action: {
-        name: "cta_url",
-        parameters: {
-          display_text: "Instagram",
-          url: "https://www.instagram.com/cuidame.tech/",
-        },
-      },
-    },
-  };
-
-  try {
-    const response = await axios.post(url, data, {
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-    });
-    console.log("Welcome message sent:", response.data);
-  } catch (error) {
-    console.error("Error sending welcome message:", error.response.data);
   }
 };
 
@@ -269,8 +142,7 @@ const sendWelcomeMessagesToAll = async (req, res) => {
 
     for (let phone of phoneNumbers) {
       if (phone) {
-        await sendTemplateMessage(`57${phone}`);
-        // await sendDailyMessage(`57${phone}`);
+        await sendTemplateMessage(phone);
         await sleep(200);
       }
     }
@@ -291,74 +163,30 @@ const sendWelcomeMessagesToAll = async (req, res) => {
 };
 
 const sendTemplateMessage = async (to) => {
-  const url = `https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`;
-  const data = {
-    messaging_product: "whatsapp",
-    to: to,
-    type: "template",
-    template: {
-      name: "instagram",
-      language: {
-        code: "en_US",
-      },
-      components: [
-        {
-          type: "header",
-          parameters: [
-            {
-              type: "image",
-              image: {
-                link: "https://cuidame.tech/wp-content/uploads/2023/02/NEON-2048x1536.png",
-              },
-            },
-          ],
-        },
-      ],
-    },
-  };
-
   try {
-    const response = await axios.post(url, data, {
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-        "Content-Type": "application/json",
-      },
+    const message = await client.messages.create({
+      from: TWILIO_PHONE_NUMBER, // Use a regular phone number for SMS
+      to: to, // No need for `whatsapp:` prefix
+      body: "Welcome to our service! We're glad to have you.",
     });
-    console.log(`Template message sent to ${to}:`, response.data);
+    console.log(`Template message sent to ${to}:`, message.sid);
   } catch (error) {
-    console.error(
-      `Error sending template message to ${to}:`,
-      error.response ? error.response.data : error
-    );
+    console.error(`Error sending template message to ${to}:`, error.message);
   }
 };
 
-const sendDailyMessage = async (to) => {
-  const url = `https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`;
-  const data = {
-    messaging_product: "whatsapp",
-    to: to,
-    type: "template",
-    template: {
-      name: "daily_message",
-      language: {
-        code: "en",
-      },
-    },
-  };
-
-  try {
-    const response = await axios.post(url, data, {
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-    });
-    console.log("Message sent:", response.data);
-  } catch (error) {
-    console.error("Error sending message:", error.response.data);
-  }
-};
+// const sendDailyMessage = async (to) => {
+//   try {
+//     const message = await client.messages.create({
+//       from: TWILIO_PHONE_NUMBER, // Use a regular phone number for SMS
+//       to: to, // No need for `whatsapp:` prefix
+//       body: "This is your daily message. Have a great day!",
+//     });
+//     console.log("Message sent:", message.sid);
+//   } catch (error) {
+//     console.error("Error sending message:", error.message);
+//   }
+// };
 
 module.exports = {
   sendNotification,

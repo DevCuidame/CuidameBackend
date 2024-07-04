@@ -13,14 +13,6 @@ const whatsappController = require("../controllers/whatsapp/whatsapp.controller"
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function sendWhatsAppNotifications(phoneNumbers) {
-  for (let phone of phoneNumbers) {
-    if (phone) {
-      await whatsappController.sendTemplateMessage(`57${phone}`);
-      await sleep(200);
-    }
-  }
-}
 
 function generateHash(password) {
   return crypto.createHash("md5").update(password).digest("hex");
@@ -743,14 +735,14 @@ module.exports = {
       const savedContacts = await User.findContactsById(contacts.idUsuario);
       if (!savedContacts) {
         await User.createContact(contacts);
-        await sendWhatsAppNotifications(phoneNumbers);
+        // await sendWhatsAppNotifications(phoneNumbers);
         return res.status(201).json({
           success: true,
           message: "Se ha guardado la información de contactos correctamente.",
         });
       } else {
         await User.updateContact(contacts);
-        await sendWhatsAppNotifications(phoneNumbers);
+        // await sendWhatsAppNotifications(phoneNumbers);
         return res.status(201).json({
           success: true,
           message: "Se ha actualizado la información de contactos correctamente.",
@@ -962,7 +954,7 @@ module.exports = {
         });
       }
 
-      await whatsappController.sendTemplateMessage(`57${user.phone}`)
+      // await whatsappController.sendTemplateMessage(`57${user.phone}`)
 
       const data = await User.create(user);
       const id = parseInt(data);

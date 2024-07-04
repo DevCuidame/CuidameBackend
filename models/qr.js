@@ -113,6 +113,7 @@ Qr.findPetByCode = (code) => {
   const sql = `
     SELECT
     m.hashcode,
+    m.nombre,
     users.id,
     users.name,
     users.lastname,
@@ -131,9 +132,12 @@ m.hashcode = $1`;
 Qr.findContacts = (idUsuario) => {
   const sql = `
     SELECT
-            telefono1,
-            telefono2,
-            telefono3
+  nombre1,
+  telefono1,
+  nombre2,
+  telefono2,
+  nombre3,
+  telefono3
         FROM
             public.contactos
         WHERE
@@ -159,8 +163,11 @@ Qr.getContacts = (idUsuario) => {
 Qr.findUserContact = (id) => {
   const sql = `
   SELECT
+  nombre1,
   telefono1,
+  nombre2,
   telefono2,
+  nombre3,
   telefono3
 FROM
   contactos
