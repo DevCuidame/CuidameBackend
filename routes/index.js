@@ -45,6 +45,10 @@ const userRoleRouter = require("../cuidameDoc/role/routes/userRole.router");
 
 const doctorRatingRouter = require("../cuidameDoc/doctor/routes/doctorRating.router");
 
+const bloodPressureRoutes = require("../Cuidame/patient/routes/bloodPressure.routes");
+const respiratoryRateRoutes = require("../Cuidame/patient/routes/respiratoryRate.routes");
+const heartRateRoutes = require("./../Cuidame/patient/routes/hearthRate.routes");
+
 function routerApi(app) {
   const router = express.Router();
   app.use("/api", router);
@@ -96,6 +100,12 @@ function routerApi(app) {
   //Role
   router.use("/role", roleRouter);
   router.use("/userrole", userRoleRouter);
+
+  //Patient Metrics
+
+  router.use("/blood-pressure", bloodPressureRoutes);
+  router.use("/respiratory-rate", respiratoryRateRoutes);
+  router.use("/heart-rate", heartRateRoutes);
 }
 
 module.exports = routerApi;
