@@ -10,9 +10,9 @@ const fs = require("fs/promises");
 
 const userRoleService = require("../cuidameDoc/role/services/userRole.service");
 const whatsappController = require("../controllers/whatsapp/whatsapp.controller");
+const { buildImage } = require("../utils/image.handler");
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
 
 function generateHash(password) {
   return crypto.createHash("md5").update(password).digest("hex");
@@ -524,12 +524,11 @@ module.exports = {
       const password = req.body.password;
       const notificationID = req.body.notificationID;
       const myUser = await User.findByEmail(email);
-      // console.log("myuser", myUser);
 
       if (!myUser) {
         return res.status(401).json({
           success: false,
-          message: "Usuario y/o contraseña no reconocidos", //Usuario no encontrado
+          message: "Usuario y/o contraseña no reconocidos",
         });
       }
 
@@ -552,6 +551,7 @@ module.exports = {
           phone: myUser.phone,
           session_token: `JWT ${token}`,
           service: myUser.service,
+          imageBs64: myUser.imagebs64,
           // roles: myUser.roles
         };
 
@@ -723,15 +723,15 @@ module.exports = {
     const phoneNumbers = new Set();
     try {
       const contacts = req.body;
-  
+
       for (let i = 1; i <= 3; i++) {
         const telefono = contacts[`telefono${i}`];
-  
+
         if (telefono) {
           phoneNumbers.add(telefono.toString());
         }
       }
-  
+
       const savedContacts = await User.findContactsById(contacts.idUsuario);
       if (!savedContacts) {
         await User.createContact(contacts);
@@ -745,7 +745,8 @@ module.exports = {
         // await sendWhatsAppNotifications(phoneNumbers);
         return res.status(201).json({
           success: true,
-          message: "Se ha actualizado la información de contactos correctamente.",
+          message:
+            "Se ha actualizado la información de contactos correctamente.",
         });
       }
     } catch (error) {
@@ -757,8 +758,6 @@ module.exports = {
       });
     }
   },
-
-  
 
   async registerObject(req, res, next) {
     try {
@@ -942,30 +941,51 @@ module.exports = {
   },
 
   async registerUser(req, res, next) {
+    const { nanoid } = await import("nanoid");
     try {
       const user = req.body;
       const code = req.body.code;
       const usuarioExiste = await User.findByEmail(user.email);
 
       if (usuarioExiste) {
-        return res.status(501).json({
+        return res.status(400).json({
           success: false,
           message: "El usuario ya se encuentra registrado en el sistema.",
         });
       }
 
-      // await whatsappController.sendTemplateMessage(`57${user.phone}`)
+      if (!user.imageBs64) {
+        return res.status(400).json({
+          success: false,
+          message: "La imagen es requerida.",
+        });
+      }
+
+      const pubName = req.body.pubName;
+      const extension = pubName.substring(pubName.lastIndexOf("."));
+
+      const priv_name = `USER_${req.body.name}_${nanoid(20)}${extension}`;
+      try {
+        await buildImage(priv_name, "Users", req.body.imageBs64);
+      } catch (error) {
+        return res.status(400).json({
+          message: "Error al guardar la imagen.",
+          error: error.message,
+          success: false,
+        });
+      }
+
+      user.privName = priv_name;
 
       const data = await User.create(user);
       const id = parseInt(data);
-      //Creamos un contactos por defecto
       await User.createContact({
         idUsuario: data.id,
         nombre1: user.name,
         telefono1: user.phone,
       });
 
-      if (code != "") {
+      if (code) {
         let toBas4 = Buffer.from(code).toString("base64");
         const charToReplace = ["=", "%", "?", "/", "+"];
         charToReplace.forEach((x, i) => {
@@ -997,7 +1017,7 @@ module.exports = {
 
       return res.status(201).json({
         success: true,
-        message: "Se ha guardado la informacion correctamente.",
+        message: "Se ha guardado la información correctamente.",
         data: data.id,
       });
     } catch (error) {
@@ -1295,7 +1315,7 @@ module.exports = {
   },
 
   async resendEmailFromDoc(req, res, next) {
-    const {email} = req.body;
+    const { email } = req.body;
     const user = await User.findByEmail(email);
 
     try {

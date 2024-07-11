@@ -45,7 +45,7 @@ exports.updateDoctor = async (req, res) => {
         } = req.body;
 
         // Obtener el doctor actual
-        const currentDoctor = await doctorService.getDoctorById(req.params.id);
+        const currentDoctor = await doctorService.getDoctor(req.params.id);
         if (!currentDoctor) {
             return res.status(404).json({ message: "Doctor no encontrado.", success: false });
         }

@@ -246,7 +246,9 @@ User.findByEmail = (email) => {
         phone,
         email,
         password,
-        verificado
+        verificado,
+        imagebs64
+
     FROM
         users
     WHERE
@@ -315,6 +317,10 @@ User.confirmEmail = (idUser) => {
 };
 
 User.create = (user) => {
+  if (!user.password) {
+    throw new Error("La contraseña es requerida.");
+  }
+
   const myPasswordHashed = crypto
     .createHash("md5")
     .update(user.password)
@@ -336,10 +342,13 @@ User.create = (user) => {
             city_id,
             address,
             verificado,
+            pubName,
+            privName,
+            imageBs64,
             created_at,
             updated_at
         )
-    VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING id
+    VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17) RETURNING id
     `;
   return db.oneOrNone(sql, [
     user.code || null,
@@ -349,11 +358,14 @@ User.create = (user) => {
     user.numberID,
     user.phone,
     user.email,
-    user.parentesco,
+    user.parentesco || null,
     user.password,
     user.city_id,
     user.address,
     false,
+    user.pubName,
+    user.privName,
+    user.imageBs64,
     new Date(),
     new Date(),
   ]);
