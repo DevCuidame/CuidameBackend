@@ -7,12 +7,24 @@ const _ = require("lodash");
 const crypto = require("crypto");
 const HttpStatus = require("http-status-codes");
 const fs = require("fs/promises");
-
 const userRoleService = require("../cuidameDoc/role/services/userRole.service");
 const whatsappController = require("../controllers/whatsapp/whatsapp.controller");
 const { buildImage } = require("../utils/image.handler");
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const tiposID = [
+  { valor: "cedula_ciudadania", etiqueta: "Cédula de ciudadanía" },
+  { valor: "cedula_extranjeria", etiqueta: "Cedula de extranjería" },
+  { valor: "tarjeta_extranjeria", etiqueta: "Tarjeta de extranjería" },
+  { valor: "tarjeta_identidad", etiqueta: "Tarjeta de identidad" },
+  { valor: "pasaporte", etiqueta: "Pasaporte" },
+];
+
+function obtenerEtiquetaTipoDocumento(valor) {
+  const tipo = tiposID.find((tipo) => tipo.valor === valor);
+  return tipo ? tipo.etiqueta : valor; // Si no encuentra la etiqueta, devuelve el valor original
+}
 
 function generateHash(password) {
   return crypto.createHash("md5").update(password).digest("hex");
@@ -1130,10 +1142,31 @@ module.exports = {
       if (ref == "usuario") {
         var data = await User.findByCod(cod);
       }
+      if (ref === "profile") {
+        const result = await User.findByHash(cod);
+        var data = result[0];
+
+        let formattedDate = "";
+        if (data.birthdate instanceof Date && !isNaN(data.birthdate)) {
+          const options = { day: "numeric", month: "long", year: "numeric" };
+          formattedDate = data.birthdate.toLocaleDateString("es-ES", options);
+        } else {
+          console.warn("La fecha de nacimiento no es válida:", data.birthdate);
+          formattedDate = "Fecha no disponible";
+        }
+
+        const tipoDocumento = data.typeid;
+        const label = obtenerEtiquetaTipoDocumento(tipoDocumento);
+
+        data.birthdate = formattedDate;
+        data.typeid = label;
+
+        console.log("🚀 ~ retrieveInfo ~ data:", data);
+      }
+
       if (ref == "user") {
         const hashcode = req.query.hashcode;
         var data = await User.findUserByHashcode(hashcode);
-        console.log(data);
       }
       if (ref == "condicion") {
         const enfermedad = await User.findEnfById(idPaciente);
@@ -1157,14 +1190,144 @@ module.exports = {
         const antPL = antP.length;
         const antFL = antF.length;
         var data = [...antP, ...antF, antPL, antFL];
+
+        // Función para formatear fechas
+        function formatDate(dateString) {
+          const date = new Date(dateString);
+          if (date instanceof Date && !isNaN(date)) {
+            const options = { day: "numeric", month: "long", year: "numeric" };
+            return date.toLocaleDateString("es-ES", options);
+          } else {
+            console.warn("La fecha no es válida:", dateString);
+            return "Fecha no disponible";
+          }
+        }
+
+        // Formatear las fechas en el arreglo de datos
+        data = data.map((item) => {
+          if (item.fechaAntecedente) {
+            item.fechaAntecedente = formatDate(item.fechaAntecedente);
+          }
+          return item;
+        });
+
+        console.log("🚀 ~ retrieveInfo ~ data:", data);
       }
+
+      if (ref == "antecedent") {
+        const antP = await User.findAntById(idPaciente);
+        const antF = await User.findAntFById(idPaciente);
+        const antPL = antP.length;
+        const antFL = antF.length;
+
+        // Combinar los resultados de antP y antF en un solo array
+        const data = [...antP, ...antF];
+
+        function formatDate(dateString) {
+          const date = new Date(dateString);
+          if (date instanceof Date && !isNaN(date)) {
+            const options = { day: "numeric", month: "long", year: "numeric" };
+            return date.toLocaleDateString("es-ES", options);
+          } else {
+            console.warn("La fecha no es válida:", dateString);
+            return "Fecha no disponible";
+          }
+        }
+
+        // Formatear las fechas en el arreglo de datos
+        data.forEach((item) => {
+          if (item.fechaAntecedente) {
+            item.fechaAntecedente = formatDate(item.fechaAntecedente);
+          }
+        });
+
+        // Agrupar los datos según el tipo de antecedente
+        const groupedData = {
+          personales: [],
+          familiares: [],
+        };
+
+        data.forEach((item) => {
+          if (item.tipoAntecedente) {
+            // Corregir ortografía de tipoAntecedente si es necesario
+            switch (item.tipoAntecedente.toLowerCase()) {
+              case "farmacologicos":
+                item.tipoAntecedente = "farmacológicos";
+                break;
+              case "patologico":
+                item.tipoAntecedente = "patológico";
+                break;
+              case "quirurgico":
+                item.tipoAntecedente = "quirúrgico";
+                break;
+              case "traumatico":
+                item.tipoAntecedente = "traumático";
+                break;
+              // Agregar más correcciones según sea necesario
+              default:
+                break;
+            }
+            groupedData.personales.push(item);
+          } else if (item.tipoAntecedenteF) {
+            // Corregir ortografía de tipoAntecedenteF si es necesario
+            switch (item.tipoAntecedenteF.toLowerCase()) {
+              case "patologico":
+                item.tipoAntecedenteF = "patológico";
+                break;
+              case "quirurgico":
+                item.tipoAntecedenteF = "quirúrgico";
+                break;
+              case "otros":
+                item.tipoAntecedenteF = "otros";
+                break;
+              // Agregar más correcciones según sea necesario
+              default:
+                break;
+            }
+            groupedData.familiares.push(item);
+          }
+        });
+
+        return res.status(201).json({
+          success: true,
+          message: "Se ha traído la información correctamente",
+          data: groupedData,
+        });
+      }
+
       if (ref == "medAlergias") {
         const med = await User.findMedById(idPaciente);
         const alergias = await User.findAlerById(idPaciente);
         const medL = med.length;
         const alergiasL = alergias.length;
         var data = [...med, ...alergias, medL, alergiasL];
-        console.log(data);
+      }
+
+      if (ref == "allergy") {
+        const med = await User.findMedById(idPaciente);
+        const alergias = await User.findAlerById(idPaciente);
+        var data = [...med, ...alergias];
+
+        const groupedData = {
+          medicamentos: [],
+          alergias: [],
+        };
+
+        data.forEach((item) => {
+          if (item.medicamento) {
+            groupedData.medicamentos.push(item);
+          } else if (item.tipoAlergia) {
+            groupedData.alergias.push(item);
+          }
+        });
+
+        console.log("🚀 ~ groupedData:", groupedData);
+
+        return res.status(200).json({
+          success: true,
+          message: "Se ha traído la información correctamente",
+          data: groupedData,
+        });
       }
 
       if (ref == "vacunas") {

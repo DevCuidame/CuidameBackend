@@ -841,6 +841,39 @@ WHERE
 
 };
 
+User.findByHash = (cod) => {
+  const sql = `
+    SELECT
+    a_cargo_id, 
+        pacientes.id, 
+        nombre as "name",
+        apellido as "lastname",
+        tipoid as "typeid",
+        numeroid as "idnum",
+        telefono as "phone",
+        fecha_nacimiento as "birthdate",
+        genero as "gender",
+        direccion as "address",
+        ciudad as "city",
+        departamento as "department",
+        rh,
+        eps,
+        prepagada,
+        arl,
+        seguro_funerario,
+        parentesco,
+        photourl,
+        c.nombre1 as "contactname",
+        c.telefono1 as "contactphone"
+    FROM 
+        pacientes
+    LEFT JOIN users ON pacientes.a_cargo_id = users.id
+    INNER JOIN contactos as c ON users.id = c.id_usuario
+    WHERE 
+        pacientes.code = $1
+        `;
+  return db.manyOrNone(sql, cod);
+};
 
 
 User.findByCod = (cod) => {
@@ -1004,15 +1037,20 @@ User.findEnfById = (id_paciente) => {
 User.findAntById = (id_paciente) => {
   const sql = `
     SELECT 
-        tipo_antecedente as "tipoAntecedente",
-        descripcion_antecedente as "descripcionAntecedente",
-        TO_CHAR(fecha_antecedente :: DATE, 'yyyy-mm-dd') as "fechaAntecedente"
+    tipo_antecedente as "tipoAntecedente",
+    descripcion_antecedente as "descripcionAntecedente",
+    TO_CHAR(fecha_antecedente :: DATE, 'yyyy-mm-dd') as "fechaAntecedente"
+FROM 
+    antecedentes 
+WHERE 
+    id_paciente = $1
+ORDER BY 
+    CASE 
+        WHEN tipo_antecedente = 'otros' THEN 1
+        ELSE 0
+    END,
+    tipo_antecedente;
 
-        
-    FROM 
-        antecedentes 
-    WHERE 
-        id_paciente = $1
         `;
   return db.manyOrNone(sql, id_paciente);
 };
@@ -1020,13 +1058,20 @@ User.findAntById = (id_paciente) => {
 User.findAntFById = (id_paciente) => {
   const sql = `
     SELECT 
-        tipo_antecedente as "tipoAntecedenteF",
-        parentesco as "parentescoF",
-        descripcion_antecedente as "descripcionAntecedenteF"
-    FROM 
-        atecedentes_familiares
-    WHERE 
-        id_paciente = $1
+    tipo_antecedente as "tipoAntecedenteF",
+    parentesco as "parentescoF",
+    descripcion_antecedente as "descripcionAntecedenteF"
+FROM 
+    atecedentes_familiares
+WHERE 
+    id_paciente = $1
+ORDER BY 
+    CASE 
+        WHEN tipo_antecedente = 'otros' THEN 1
+        ELSE 0
+    END,
+    tipo_antecedente;
+
         `;
   return db.manyOrNone(sql, id_paciente);
 };
