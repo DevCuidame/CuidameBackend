@@ -276,7 +276,6 @@ async function createOrUpdatePet(req, res, next) {
   try {
     const petinfo = req.body;
     const imageFile = req.file;
-    console.log(petinfo);
     // console.log(imageFile);
     if (imageFile) {
       petinfo.photoUrl = imageFile.path;
@@ -384,7 +383,6 @@ module.exports = {
       const id = req.params.id;
       const resetToken = req.params.resetToken;
       const newPassword = req.body.newPassword;
-      console.log(newPassword);
 
       // Verificar si el token es válido y obtener el usuario
       const decodedToken = jwt.verify(resetToken, keys.secretOrKey);
@@ -606,7 +604,6 @@ module.exports = {
     try {
       const Info = req.body;
       const form = Number(Info.form);
-      console.log("INFO DEL FRONTEND", Info);
 
       if (form == 1) {
         const { hashcode } = await User.getOneQr();
@@ -619,7 +616,6 @@ module.exports = {
             message: "No hay licencias para la persona.",
           });
         }
-        console.log("Form 1:", Info);
 
         const exists = await User.personByHashcode(Info.code);
         if (exists) {
@@ -1073,7 +1069,6 @@ module.exports = {
     try {
       const hashcode = req.body.hashcode;
       const object = req.body.objeto;
-      console.log("conchita", hashcode, object);
       await User.deleteObject(hashcode, object);
       // await Rol.create(data.id, 1); //Estableciedo rol por defecto (cliente)
       return res.status(201).json({
@@ -1116,7 +1111,6 @@ module.exports = {
       const ref = req.query.ref;
       const idPaciente = req.query.id;
 
-      console.log("debug", cod, ref, idPaciente);
 
       if (ref == "objetos") {
         const hashcode = req.query.hashcode;
@@ -1161,7 +1155,6 @@ module.exports = {
         data.birthdate = formattedDate;
         data.typeid = label;
 
-        console.log("🚀 ~ retrieveInfo ~ data:", data);
       }
 
       if (ref == "user") {
@@ -1170,7 +1163,6 @@ module.exports = {
       }
       if (ref == "condicion") {
         const enfermedad = await User.findEnfById(idPaciente);
-        console.log("enf", enfermedad);
         const enfermedadL = enfermedad.length;
         const condicion = await User.findCondById(idPaciente);
         var data = [...enfermedad, ...condicion, enfermedadL];
@@ -1178,7 +1170,6 @@ module.exports = {
 
       if (ref == "condición") {
         const enfermedad = await User.findEnfById(idPaciente);
-        console.log("enf", enfermedad);
         const enfermedadL = enfermedad.length;
         const condicion = await User.findCondById(idPaciente);
         var data = [...enfermedad, ...condicion, enfermedadL];
@@ -1211,7 +1202,6 @@ module.exports = {
           return item;
         });
 
-        console.log("🚀 ~ retrieveInfo ~ data:", data);
       }
 
       if (ref == "antecedent") {
@@ -1321,7 +1311,6 @@ module.exports = {
           }
         });
 
-        console.log("🚀 ~ groupedData:", groupedData);
 
         return res.status(200).json({
           success: true,

@@ -323,6 +323,8 @@ CREATE TABLE IF NOT EXISTS public.pacientes
     created_at timestamp(0) without time zone NOT NULL,
     updated_at timestamp(0) without time zone NOT NULL,
     photourl character varying(255) COLLATE pg_catalog."default",
+    pub_name character varying(255) COLLATE pg_catalog."default",
+    file_bs64 TEXT COLLATE pg_catalog."default",
     CONSTRAINT pacientes_pkey PRIMARY KEY (id),
     CONSTRAINT pacientes_code_key UNIQUE (code)
 );

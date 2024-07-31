@@ -1,7 +1,6 @@
 const documentRepository = require('../repositories/document.repository');
 
 exports.createDocument = async (data) => {
-    const { provider_id, pub_name, priv_name, file_bs64 } = data;
   return documentRepository.createDocument(data);
 };
 

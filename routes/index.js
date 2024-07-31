@@ -49,6 +49,16 @@ const bloodPressureRoutes = require("../Cuidame/patient/routes/bloodPressure.rou
 const respiratoryRateRoutes = require("../Cuidame/patient/routes/respiratoryRate.routes");
 const heartRateRoutes = require("./../Cuidame/patient/routes/hearthRate.routes");
 
+// Relative Routes
+const allergyRoutes = require("../Cuidame/patient/routes/relative/allergy.routes")
+const antecendentRoutes = require("../Cuidame/patient/routes/relative/antecedent.routes")
+const conditionRoutes = require("../Cuidame/patient/routes/relative/condition.routes")
+const medicamentRoutes = require("../Cuidame/patient/routes/relative/medicament.routes")
+const diseaseRoutes = require("../Cuidame/patient/routes/relative/disease.routes")
+const relativeRoutes = require("../Cuidame/patient/routes/relative/relative.routes")
+const relativesAntecedentRoutes = require("../Cuidame/patient/routes/relative/relativesAntecedent.routes")
+const vaccineRoutes = require("../Cuidame/patient/routes/relative/vaccine.routes")
+
 function routerApi(app) {
   const router = express.Router();
   app.use("/api", router);
@@ -106,6 +116,19 @@ function routerApi(app) {
   router.use("/blood-pressure", bloodPressureRoutes);
   router.use("/respiratory-rate", respiratoryRateRoutes);
   router.use("/heart-rate", heartRateRoutes);
+
+  // Relative Routes
+  router.use("/allergy", bloodPressureRoutes);
+  router.use("/antecendent", bloodPressureRoutes);
+  router.use("/condition", bloodPressureRoutes);
+  router.use("/disease", bloodPressureRoutes);
+  router.use("/medicament", bloodPressureRoutes);
+  router.use("/relative", bloodPressureRoutes);
+  router.use("/relative-antecedent", bloodPressureRoutes);
+  router.use("/vaccine", bloodPressureRoutes);
+
+
+
 }
 
 module.exports = routerApi;
