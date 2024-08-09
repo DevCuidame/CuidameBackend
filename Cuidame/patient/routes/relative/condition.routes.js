@@ -5,7 +5,7 @@ const ConditionController = require('../../controllers/relative/condition.contro
 router.post('/', ConditionController.createCondition);
 router.get('/:id', ConditionController.getCondition);
 router.get('/', ConditionController.getAllConditions);
-router.put('/:id', ConditionController.updateCondition);
+router.put('/:id', ConditionController.updateConditionByRelative);
 router.delete('/:id', ConditionController.deleteCondition);
 
 module.exports = router;

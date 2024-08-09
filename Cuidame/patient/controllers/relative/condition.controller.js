@@ -44,17 +44,41 @@ exports.getAllConditions = async (req, res) => {
   }
 };
 
-exports.updateCondition = async (req, res) => {
+exports.updateConditionByRelative = async (req, res) => {
   try {
-    const id = req.params.id;
-    const data = req.body;
-    const updatedCondition = await conditionService.updateCondition(id, data);
+    const id_paciente = req.params.id;
+    const conditionData = req.body[0]; // Acceder al primer objeto del array
+
+    const { cicatrices, tatuajes, discapacidad, embarazada } = conditionData;
+
+    const data = {
+      cicatrices_descripcion: cicatrices,
+      tatuajes_descripcion: tatuajes,
+      discapacidad: discapacidad,
+      embarazada: embarazada,
+      updated_at: new Date(),
+      id_paciente, 
+      created_at: new Date()
+    };
+
+    const existingCondition = await conditionService.getConditionByRelative(id_paciente);
+
+    let updatedCondition;
+
+    if (!existingCondition || existingCondition.length === 0) {
+      updatedCondition = await conditionService.createCondition(data);
+    } else {
+      updatedCondition = await conditionService.updateCondition(id_paciente, data);
+    }
 
     return res.status(200).json({ updatedCondition, success: true });
   } catch (error) {
     return res.status(400).json({ error: error.message, success: false });
   }
 };
+
+
+
 
 exports.deleteCondition = async (req, res) => {
   try {

@@ -118,14 +118,14 @@ function routerApi(app) {
   router.use("/heart-rate", heartRateRoutes);
 
   // Relative Routes
-  router.use("/allergy", bloodPressureRoutes);
-  router.use("/antecendent", bloodPressureRoutes);
-  router.use("/condition", bloodPressureRoutes);
-  router.use("/disease", bloodPressureRoutes);
-  router.use("/medicament", bloodPressureRoutes);
-  router.use("/relative", bloodPressureRoutes);
-  router.use("/relative-antecedent", bloodPressureRoutes);
-  router.use("/vaccine", bloodPressureRoutes);
+  router.use("/disease", diseaseRoutes);
+  router.use("/condition", conditionRoutes);
+  router.use("/allergy", allergyRoutes);
+  router.use("/antecedent", antecendentRoutes);
+  router.use("/medicament", medicamentRoutes);
+  router.use("/relative-cuidame", relativeRoutes);
+  router.use("/relative-antecedent", relativesAntecedentRoutes);
+  router.use("/vaccine", vaccineRoutes);
 
 
 

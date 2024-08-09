@@ -32,8 +32,10 @@ User.getUserById = (id) => {
   u.address,
 u.city_id,
 u.phone,
-
-  d.id as department
+  d.id as department,
+  u.pubname, 
+  u.privname, 
+  u.imagebs64 
 FROM
   users as u
 INNER JOIN townships AS t ON u.city_id = t.id
@@ -54,7 +56,10 @@ User.updateUser = (data) => {
         numberid = $5,
         address = $6,
         city_id  = $7,
-        phone = $8
+        phone = $8,
+        pubname = $9,
+        privname = $10,
+        imagebs64 = $11
     WHERE
         id = $1
   `;
@@ -67,6 +72,9 @@ User.updateUser = (data) => {
     data.address,
     data.city_id,
     data.phone,
+    data.pubname,
+    data.privname,
+    data.imagebs64,
   ]);
 };
 
@@ -177,7 +185,8 @@ User.findOneUserById = (id) => {
         phone,
         email,
         password,
-        session_token
+        session_token,
+        imagebs64
     FROM
         users
     WHERE
@@ -787,7 +796,6 @@ User.updateContact = (info) => {
   ]);
 };
 
-
 User.getCardData = (cod) => {
   const sql = `
   SELECT
@@ -838,7 +846,6 @@ WHERE
     p.code = $1;
         `;
   return db.manyOrNone(sql, cod);
-
 };
 
 User.findByHash = (cod) => {
@@ -856,6 +863,7 @@ User.findByHash = (cod) => {
         direccion as "address",
         ciudad as "city",
         departamento as "department",
+        pacientes.imagebs64,
         rh,
         eps,
         prepagada,
@@ -874,7 +882,6 @@ User.findByHash = (cod) => {
         `;
   return db.manyOrNone(sql, cod);
 };
-
 
 User.findByCod = (cod) => {
   const sql = `
@@ -1005,41 +1012,63 @@ User.existsPetByHashcode = (hashcode) => {
   return db.oneOrNone(sql, hashcode);
 };
 
-User.findCondById = (id_paciente) => {
+User.findCondById = async (id_paciente) => {
   const sql = `
     SELECT 
-		discapacidad,
-		embarazada,
-		cicatrices_descripcion AS "cicatrices",
-		tatuajes_descripcion AS "tatuajes"
+      discapacidad,
+      embarazada,
+      cicatrices_descripcion AS "cicatrices",
+      tatuajes_descripcion AS "tatuajes"
     FROM 
         condicion 
     WHERE 
         id_paciente = $1
-        `;
+  `;
 
-  return db.manyOrNone(sql, id_paciente);
+  const result = await db.manyOrNone(sql, id_paciente);
+
+  if (result.length === 0) {
+    return [{
+      discapacidad: null,
+      embarazada: null,
+      cicatrices: null,
+      tatuajes: null
+    }];
+  }
+
+  return result;
 };
 
-User.findEnfById = (id_paciente) => {
+
+User.findEnfById = async (id_paciente) => {
   const sql = `
     SELECT 
-		enfermedad
+      enfermedad
     FROM 
         enfermedades 
     WHERE 
         id_paciente = $1
-        `;
+  `;
 
-  return db.manyOrNone(sql, id_paciente);
+  const result = await db.manyOrNone(sql, id_paciente);
+
+  if (result.length === 0) {
+    return [{
+      enfermedad: null
+    }];
+  }
+
+  return result;
 };
+
 
 User.findAntById = (id_paciente) => {
   const sql = `
     SELECT 
-    tipo_antecedente as "tipoAntecedente",
-    descripcion_antecedente as "descripcionAntecedente",
-    TO_CHAR(fecha_antecedente :: DATE, 'yyyy-mm-dd') as "fechaAntecedente"
+    id,
+    tipo_antecedente AS "tipoAntecedente",
+    descripcion_antecedente AS "descripcionAntecedente",
+    TO_CHAR(fecha_antecedente :: DATE, 'yyyy-mm-dd') AS "fechaAntecedente"
 FROM 
     antecedentes 
 WHERE 
@@ -1049,8 +1078,8 @@ ORDER BY
         WHEN tipo_antecedente = 'otros' THEN 1
         ELSE 0
     END,
-    tipo_antecedente;
-
+    tipo_antecedente ASC,
+    id ASC
         `;
   return db.manyOrNone(sql, id_paciente);
 };
@@ -1058,6 +1087,7 @@ ORDER BY
 User.findAntFById = (id_paciente) => {
   const sql = `
     SELECT 
+    id,
     tipo_antecedente as "tipoAntecedenteF",
     parentesco as "parentescoF",
     descripcion_antecedente as "descripcionAntecedenteF"
@@ -1070,7 +1100,8 @@ ORDER BY
         WHEN tipo_antecedente = 'otros' THEN 1
         ELSE 0
     END,
-    tipo_antecedente;
+    tipo_antecedente,
+    id ASC;
 
         `;
   return db.manyOrNone(sql, id_paciente);
@@ -1079,6 +1110,7 @@ ORDER BY
 User.findMedById = (id_paciente) => {
   const sql = `
     SELECT 
+    id,
         medicamento,
         laboratorio,
         formula
@@ -1086,6 +1118,8 @@ User.findMedById = (id_paciente) => {
         medicamentos 
     WHERE 
         id_paciente = $1
+    ORDER BY 
+    id ASC;
         `;
   return db.manyOrNone(sql, id_paciente);
 };
@@ -1093,12 +1127,15 @@ User.findMedById = (id_paciente) => {
 User.findAlerById = (id_paciente) => {
   const sql = `
     SELECT 
+    id,
         tipo_alergia AS "tipoAlergia",
         descripcion
     FROM 
         alergias 
     WHERE 
         id_paciente = $1
+    ORDER BY 
+    id ASC;
         `;
   return db.manyOrNone(sql, id_paciente);
 };
@@ -1106,11 +1143,15 @@ User.findAlerById = (id_paciente) => {
 User.findVacunasById = (id_paciente) => {
   const sql = `
     SELECT 
-        vacuna
-    FROM 
-        vacunas
-    WHERE 
-        id_paciente = $1
+    id,
+    vacuna
+FROM 
+    vacunas
+WHERE 
+    id_paciente = $1
+ORDER BY 
+    id ASC;
+
         `;
   return db.manyOrNone(sql, id_paciente);
 };

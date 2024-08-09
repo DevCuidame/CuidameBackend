@@ -1,5 +1,6 @@
 const fs = require("fs");
 
+
 async function buildImage(dir, folder, base64) {
   try {
     const match = base64.match(/^data:image\/(\w+);base64,/);
@@ -29,6 +30,7 @@ async function deleteImage(path) {
     throw new Error("Error al eliminar la imagen: " + error.message);
   }
 }
+
 
 module.exports = {
   buildImage,

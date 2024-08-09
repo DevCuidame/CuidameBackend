@@ -29,8 +29,10 @@ exports.getRelativeAntecedentByRelative = async (id) => {
   if (!result.rows.length) {
     return null;
   }
-  const { id_paciente, tipo_antecedente, parentesco, descripcion_antecedente, created_at, updated_at } = result.rows[0];
-  return new RelativeAntecedentModel(id, id_paciente, tipo_antecedente, parentesco, descripcion_antecedente, created_at, updated_at);
+  return result.rows.map(row => {
+    const { id, id_paciente, tipo_antecedente, parentesco, descripcion_antecedente, created_at, updated_at } = row;
+    return new RelativeAntecedentModel(id, id_paciente, tipo_antecedente, parentesco, descripcion_antecedente, created_at, updated_at);
+  });
 };
 
 exports.getAllRelativeAntecedents = async () => {

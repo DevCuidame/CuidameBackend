@@ -27,8 +27,10 @@ exports.getConditionByRelative = async (id) => {
   if (!result.rows.length) {
     return null;
   }
-  const { id_paciente, discapacidad, embarazada, cicatrices_descripcion, tatuajes_descripcion, created_at, updated_at } = result.rows[0];
-  return new ConditionModel(id, id_paciente, discapacidad, embarazada, cicatrices_descripcion, tatuajes_descripcion, created_at, updated_at);
+  return result.rows.map(row => {
+    const { id, id_paciente, discapacidad, embarazada, cicatrices_descripcion, tatuajes_descripcion, created_at, updated_at } = row;
+    return new ConditionModel(id, id_paciente, discapacidad, embarazada, cicatrices_descripcion, tatuajes_descripcion, created_at, updated_at);
+  });
 };
 
 exports.getAllConditions = async () => {
@@ -43,13 +45,14 @@ exports.getAllConditions = async () => {
   });
 };
 
-exports.updateCondition = async (id, data) => {
-  const { id_paciente, discapacidad, embarazada, cicatrices_descripcion, tatuajes_descripcion, created_at, updated_at } = data;
-  const query = 'UPDATE condicion SET id_paciente = $1, discapacidad = $2, embarazada = $3, cicatrices_descripcion = $4, tatuajes_descripcion = $5, created_at = $6, updated_at = $7 WHERE id = $8 RETURNING *';
-  const values = [id_paciente, discapacidad, embarazada, cicatrices_descripcion, tatuajes_descripcion, created_at, updated_at, id];
+exports.updateCondition = async (id_paciente, data) => {
+  const { discapacidad, embarazada, cicatrices_descripcion, tatuajes_descripcion, updated_at } = data;
+  const query = 'UPDATE condicion SET discapacidad = $1, embarazada = $2, cicatrices_descripcion = $3, tatuajes_descripcion = $4, updated_at = $5 WHERE id_paciente = $6 RETURNING *';
+  const values = [discapacidad, embarazada, cicatrices_descripcion, tatuajes_descripcion, updated_at, id_paciente];
   const result = await pool.query(query, values);
-  return new ConditionModel(id, id_paciente, discapacidad, embarazada, cicatrices_descripcion, tatuajes_descripcion, created_at, updated_at);
+  return result.rows[0];
 };
+
 
 exports.deleteCondition = async (id) => {
   const selectQuery = 'SELECT * FROM condicion WHERE id = $1';

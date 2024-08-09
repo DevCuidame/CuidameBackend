@@ -24,12 +24,17 @@ exports.getAntecedent = async (id) => {
 exports.getAntecedentByRelative = async (id) => {
   const query = 'SELECT * FROM antecedentes WHERE id_paciente = $1';
   const result = await pool.query(query, [id]);
+
   if (!result.rows.length) {
-    return null;
+    return []; 
   }
-  const { id_paciente, tipo_antecedente, descripcion_antecedente, fecha_antecedente, created_at, updated_at } = result.rows[0];
-  return new AntecedentModel(id, id_paciente, tipo_antecedente, descripcion_antecedente, fecha_antecedente, created_at, updated_at);
+
+  return result.rows.map(row => {
+    const { id, id_paciente, tipo_antecedente, descripcion_antecedente, fecha_antecedente, created_at, updated_at } = row;
+    return new AntecedentModel(id, id_paciente, tipo_antecedente, descripcion_antecedente, fecha_antecedente, created_at, updated_at);
+  });
 };
+
 
 
 exports.getAllAntecedents = async () => {

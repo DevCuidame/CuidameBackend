@@ -26,8 +26,10 @@ exports.getMedicamentByRelative = async (id) => {
   if (!result.rows.length) {
     return null;
   }
-  const { id_paciente, medicamento, laboratorio, formula, created_at, updated_at } = result.rows[0];
-  return new MedicamentModel(id, id_paciente, medicamento, laboratorio, formula, created_at, updated_at);
+  return result.rows.map(row => {
+    const { id, id_paciente, medicamento, laboratorio, formula, created_at, updated_at } = row;
+    return new MedicamentModel(id, id_paciente, medicamento, laboratorio, formula, created_at, updated_at);
+  });
 };
 
 exports.getAllMedicaments = async () => {

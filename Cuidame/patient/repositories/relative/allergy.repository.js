@@ -26,8 +26,10 @@ exports.getAllergyByPaciente = async (id) => {
   if (!result.rows.length) {
     return null;
   }
-  const { id_paciente, tipo_alergia, descripcion, created_at, updated_at } = result.rows[0];
-  return new AllergyModel(id, id_paciente, tipo_alergia, descripcion, created_at, updated_at);
+  return result.rows.map(row => {
+    const { id, id_paciente, tipo_alergia, descripcion, created_at, updated_at } = row;
+    return new AllergyModel(id, id_paciente, tipo_alergia, descripcion, created_at, updated_at);
+  });
 };
 
 exports.getAllAllergies = async () => {

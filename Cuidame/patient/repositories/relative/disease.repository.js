@@ -2,7 +2,9 @@ const pool = require("../../../../utils/connection");
 const DiseaseModel = require("../../models/relative/disease.model");
 
 exports.createDisease = async (data) => {
-  const { id_paciente, enfermedad, created_at, updated_at } = data;
+  const { id_paciente, enfermedad } = data;
+  let created_at = new Date()
+  let updated_at = new Date()
   const query = 'INSERT INTO enfermedades (id_paciente, enfermedad, created_at, updated_at) VALUES ($1, $2, $3, $4) RETURNING *';
   const values = [id_paciente, enfermedad, created_at, updated_at];
   const result = await pool.query(query, values);
@@ -26,8 +28,10 @@ exports.getDiseaseByRelative = async (id) => {
   if (!result.rows.length) {
     return null;
   }
-  const { id_paciente, enfermedad, created_at, updated_at } = result.rows[0];
-  return new DiseaseModel(id, id_paciente, enfermedad, created_at, updated_at);
+  return result.rows.map(row => {
+    const { id, id_paciente, enfermedad, created_at, updated_at } = row;
+    return new DiseaseModel(id, id_paciente, enfermedad, created_at, updated_at);
+  });
 };
 
 exports.getAllDiseases = async () => {
@@ -43,12 +47,15 @@ exports.getAllDiseases = async () => {
 };
 
 exports.updateDisease = async (id, data) => {
-  const { id_paciente, enfermedad, created_at, updated_at } = data;
+  const { id_paciente, enfermedad } = data;
+  let created_at = new Date()
+  let updated_at = new Date()
   const query = 'UPDATE enfermedades SET id_paciente = $1, enfermedad = $2, created_at = $3, updated_at = $4 WHERE id = $5 RETURNING *';
   const values = [id_paciente, enfermedad, created_at, updated_at, id];
   const result = await pool.query(query, values);
   return new DiseaseModel(id, id_paciente, enfermedad, created_at, updated_at);
 };
+
 
 exports.deleteDisease = async (id) => {
   const selectQuery = 'SELECT * FROM enfermedades WHERE id = $1';

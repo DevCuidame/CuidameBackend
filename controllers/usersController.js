@@ -116,12 +116,33 @@ async function updatePassword(req, res, next) {
 
 async function updateUser(req, res, next) {
   try {
-    const info = req.body;
-    console.log(info);
-
-    const saved = await User.findOneUserById(info.id);
+    const { id, imagebs64, pubname } = req.body;
+    const info = req.body
+    
+    const saved = await User.findOneUserById(id);
 
     if (saved) {
+      if (imagebs64) {
+        const { nanoid } = await import("nanoid");
+        const extension = pubname.substring(pubname.lastIndexOf("."));
+        const privname = `USER_${saved.name}_${nanoid(20)}${extension}`;
+
+        try {
+          await buildImage(privname, "Users", imagebs64);
+          info.privname = privname; 
+        } catch (error) {
+          return res.status(400).json({
+            message: "Error al guardar la imagen.",
+            error: error.message,
+            success: false,
+          });
+        }
+      }
+
+      // Actualizar la información del usuario
+     await User.updateUser(info);
+
+      // Generar un nuevo token de sesión
       const token = jwt.sign(
         { id: saved.id, email: saved.email },
         keys.secretOrKey,
@@ -130,19 +151,21 @@ async function updateUser(req, res, next) {
         }
       );
 
-      const data = {
-        id: saved.id,
-        hashcode: saved.hashcode,
-        name: saved.name,
-        lastname: saved.lastname,
-        typeID: saved.typeid,
-        numberID: saved.numberid,
-        email: saved.email,
-        phone: saved.phone,
-        session_token: `JWT ${token}`,
-      };
+      const updated = await User.findOneUserById(id);
 
-      await User.updateUser(info);
+      const data = {
+        id: updated.id,
+        hashcode: updated.hashcode,
+        name: updated.name,
+        lastname: updated.lastname,
+        typeID: updated.typeid,
+        numberID: updated.numberid,
+        email: updated.email,
+        phone: updated.phone,
+        session_token: `JWT ${token}`,
+        imagebs64: updated.imagebs64
+      };
+      console.log("🚀 ~ updateUser ~ data:", data)
 
       return res.status(201).json({
         success: true,
@@ -150,7 +173,7 @@ async function updateUser(req, res, next) {
         data: data,
       });
     } else {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         message: "No existe el usuario",
       });
@@ -164,6 +187,7 @@ async function updateUser(req, res, next) {
     });
   }
 }
+
 
 async function getOneUser(req, res, next) {
   try {
@@ -561,9 +585,10 @@ module.exports = {
           phone: myUser.phone,
           session_token: `JWT ${token}`,
           service: myUser.service,
-          imageBs64: myUser.imagebs64,
+          imagebs64: myUser.imagebs64,
           // roles: myUser.roles
         };
+   
 
         if (!myUser.verificado) {
           return res.status(401).json({
@@ -1138,6 +1163,7 @@ module.exports = {
       }
       if (ref === "profile") {
         const result = await User.findByHash(cod);
+        console.log("🚀 ~ retrieveInfo ~ result:", result)
         var data = result[0];
 
         let formattedDate = "";
@@ -1170,9 +1196,11 @@ module.exports = {
 
       if (ref == "condición") {
         const enfermedad = await User.findEnfById(idPaciente);
-        const enfermedadL = enfermedad.length;
         const condicion = await User.findCondById(idPaciente);
-        var data = [...enfermedad, ...condicion, enfermedadL];
+        var data = {
+          diseases: enfermedad,
+          disability: condicion,
+        };
       }
 
       if (ref == "antecedentes") {

@@ -46,15 +46,81 @@ exports.getAllRelativeAntecedents = async (req, res) => {
 
 exports.updateRelativeAntecedent = async (req, res) => {
   try {
-    const id = req.params.id;
-    const data = req.body;
-    const updatedRelativeAntecedent = await relativeAntecedentService.updateRelativeAntecedent(id, data);
+    const id_paciente = req.params.id;
+    const relativeAntecedentsData = req.body;
+    console.log("🚀 ~ exports.updateRelativeAntecedent= ~ relativeAntecedentsData:", relativeAntecedentsData);
 
-    return res.status(200).json({ updatedRelativeAntecedent, success: true });
+    const currentRelativeAntecedents = await relativeAntecedentService.getRelativeAntecedentByRelative(id_paciente) || [];
+
+    const currentAntecedentsMap = new Map(currentRelativeAntecedents.map(antecedent => [antecedent.id, antecedent]));
+
+    const antecedentsToAdd = [];
+    const antecedentsToUpdate = [];
+    const antecedentsToDelete = [];
+
+    relativeAntecedentsData.forEach(newAntecedent => {
+      if (newAntecedent.id) {
+        const existingAntecedent = currentAntecedentsMap.get(newAntecedent.id);
+
+        if (existingAntecedent) {
+          antecedentsToUpdate.push({
+            id: newAntecedent.id,
+            id_paciente,
+            tipo_antecedente: newAntecedent.tipoAntecedenteF,
+            parentesco: newAntecedent.parentescoF,
+            descripcion_antecedente: newAntecedent.descripcionAntecedenteF,
+            created_at: existingAntecedent.created_at,
+            updated_at: new Date(),
+          });
+        } else {
+          console.warn(`Antecedente con ID ${newAntecedent.id} no encontrado para actualización.`);
+        }
+      } else {
+        antecedentsToAdd.push({
+          id_paciente,
+          tipo_antecedente: newAntecedent.tipoAntecedenteF,
+          parentesco: newAntecedent.parentescoF,
+          descripcion_antecedente: newAntecedent.descripcionAntecedenteF,
+          created_at: new Date(),
+          updated_at: new Date(),
+        });
+      }
+    });
+
+    // Identificar antecedentes para eliminar
+    const receivedIds = new Set(relativeAntecedentsData.map(antecedent => antecedent.id));
+    currentRelativeAntecedents.forEach(existingAntecedent => {
+      if (!receivedIds.has(existingAntecedent.id)) {
+        antecedentsToDelete.push(existingAntecedent.id);
+      }
+    });
+
+    // Procesar adiciones
+    if (antecedentsToAdd.length > 0) {
+      await Promise.all(antecedentsToAdd.map(antecedent => relativeAntecedentService.createRelativeAntecedent(antecedent)));
+    }
+
+    // Procesar actualizaciones
+    if (antecedentsToUpdate.length > 0) {
+      await Promise.all(antecedentsToUpdate.map(antecedent => relativeAntecedentService.updateRelativeAntecedent(antecedent.id, antecedent)));
+    }
+
+    // Procesar eliminaciones
+    if (antecedentsToDelete.length > 0) {
+      await Promise.all(antecedentsToDelete.map(id => relativeAntecedentService.deleteRelativeAntecedent(id)));
+    }
+
+    // Retornar la lista actualizada de antecedentes
+    const updatedRelativeAntecedents = await relativeAntecedentService.getRelativeAntecedentByRelative(id_paciente);
+    return res.status(200).json({ updatedRelativeAntecedents, success: true });
+
   } catch (error) {
+    console.error("Error en updateRelativeAntecedent:", error);
     return res.status(400).json({ error: error.message, success: false });
   }
 };
+
+
 
 exports.deleteRelativeAntecedent = async (req, res) => {
   try {

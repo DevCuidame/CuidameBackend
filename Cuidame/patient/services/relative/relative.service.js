@@ -8,6 +8,10 @@ exports.getRelative = async (id) => {
   return relativeRepository.getRelative(id);
 };
 
+exports.getRelativeByNit = async (numeroid) => {
+  return relativeRepository.getRelativeByNit(numeroid);
+};
+
 exports.getAllRelatives = async () => {
   return relativeRepository.getAllRelatives();
 };
