@@ -128,8 +128,8 @@ async function updateUser(req, res, next) {
         const privname = `USER_${saved.name}_${nanoid(20)}${extension}`;
 
         try {
-          await buildImage(privname, "Users", imagebs64);
-          info.privname = privname; 
+          await buildImage(privname, "profile", imagebs64);
+          info.privname = '\\home\\developer\\uploads\\pets\\profile\\' + privname; 
         } catch (error) {
           return res.status(400).json({
             message: "Error al guardar la imagen.",
@@ -999,7 +999,7 @@ module.exports = {
 
       const priv_name = `USER_${req.body.name}_${nanoid(20)}${extension}`;
       try {
-        await buildImage(priv_name, "Users", req.body.imageBs64);
+        await buildImage(priv_name, "profile", req.body.imageBs64);
       } catch (error) {
         return res.status(400).json({
           message: "Error al guardar la imagen.",
@@ -1008,7 +1008,7 @@ module.exports = {
         });
       }
 
-      user.privName = priv_name;
+      user.privName = '\\home\\developer\\uploads\\pets\\profile\\' + priv_name;
 
       const data = await User.create(user);
       const id = parseInt(data);

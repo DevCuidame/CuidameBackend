@@ -60,7 +60,7 @@ exports.createRelative = async (req, res) => {
     const pubName = req.body.pubname;
     const extension = pubName.substring(pubName.lastIndexOf("."));
 
-    const priv_name = `Relative_${nanoid(20)}`;
+    const priv_name = `RELATIVE_${nanoid(20)}`;
     try {
       await buildImage(priv_name, "profile", req.body.imagebs64);
     } catch (error) {
@@ -71,7 +71,7 @@ exports.createRelative = async (req, res) => {
       });
     }
 
-    data.photourl = "uploads\\person\\profile\\" + priv_name + extension;
+    data.photourl = "\\home\\developer\\uploads\\person\\profile\\" + priv_name + extension;
 
     const newRelative = await relativeService.createRelative(data);
 
@@ -148,11 +148,11 @@ exports.updateRelative = async (req, res) => {
     
 
       const extension = pubName.substring(pubName.lastIndexOf("."));
-      const priv_name = `Relative_${nanoid(20)}`;
+      const priv_name = `RELATIVE_${nanoid(20)}`;
 
       try {
         await buildImage(priv_name, "profile", data.imagebs64);
-        data.photourl = "uploads\\person\\profile\\" + priv_name + extension;
+        data.photourl = "\\home\\developer\\uploads\\person\\profile\\" + priv_name + extension;
       } catch (error) {
         return res.status(400).json({
           message: "Error al guardar la imagen.",

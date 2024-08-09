@@ -9,7 +9,7 @@ async function buildImage(dir, folder, base64) {
     }
     const extension = match[1];
     const decoding = base64.replace(/^data:image\/\w+;base64,/, "");
-    const directoryPath = `./uploads/person/${folder}/`;
+    const directoryPath = `/home/developer/uploads/${folder}/`;
 
     await fs.promises.mkdir(directoryPath, { recursive: true });
 
