@@ -567,3 +567,18 @@ UPDATE codes SET agreement = 'Free' WHERE license = 'Pets' AND agreement = 'IKE'
 
 UPDATE codes SET agreement = 'Premium' WHERE hashcode IN (SELECT hashcode FROM mascotas where id_usuario IN (22, 39, 5, 7, 34, 23))
 UPDATE codes SET status = 'active' WHERE hashcode IN (SELECT hashcode FROM mascotas);
+
+
+ALTER TABLE	users ADD COLUMN pubname VARCHAR(100) DEFAULT ' ';
+ALTER TABLE	users ALTER COLUMN pubname SET NOT NULL;
+
+ALTER TABLE	users ADD COLUMN privname VARCHAR(100) DEFAULT ' ';
+ALTER TABLE	users ALTER COLUMN privname SET NOT NULL;
+
+ALTER TABLE	users ADD COLUMN imagebs64 TEXT DEFAULT ' ';
+ALTER TABLE	users ALTER COLUMN imagebs64 SET NOT NULL;
+
+
+ALTER TABLE	pacientes ADD COLUMN imagebs64 TEXT DEFAULT ' ';
+ALTER TABLE	pacientes ALTER COLUMN imagebs64 SET NOT NULL;
+
