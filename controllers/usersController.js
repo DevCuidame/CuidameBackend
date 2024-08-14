@@ -435,20 +435,20 @@ module.exports = {
       // Actualizar la contraseña del usuario
       await User.updatePassword(id, newPasswordHashed);
 
-      return res.status(HttpStatus.OK).json({
+      return res.status(200).json({
         success: true,
         message: "Contraseña actualizada exitosamente",
       });
     } catch (error) {
       if (error instanceof jwt.JsonWebTokenError) {
         console.error("Token inválido para esta solicitud");
-        return res.status(HttpStatus.BAD_REQUEST).json({
+        return res.status(400).json({
           success: false,
           message: "Token inválido para esta solicitud",
         });
       }
       console.error(`Error: ${error}`);
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      return res.status(400).json({
         success: false,
         message: "Error al actualizar la contraseña",
         error: error,
@@ -1171,10 +1171,17 @@ module.exports = {
           const options = { day: "numeric", month: "long", year: "numeric" };
           formattedDate = data.birthdate.toLocaleDateString("es-ES", options);
         } else {
-          console.warn("La fecha de nacimiento no es válida:", data.birthdate);
-          formattedDate = "Fecha no disponible";
+          if (data.birthdate === null) {
+            // Use the current date as the default
+            const currentDate = new Date();
+            const options = { day: "numeric", month: "long", year: "numeric" };
+            formattedDate = currentDate.toLocaleDateString("es-ES", options);
+          } else {
+            console.warn("La fecha de nacimiento no es válida:", data.birthdate);
+            formattedDate = "Fecha no disponible";
+          }
         }
-
+        
         const tipoDocumento = data.typeid;
         const label = obtenerEtiquetaTipoDocumento(tipoDocumento);
 

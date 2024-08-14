@@ -18,7 +18,6 @@ exports.createRelative = async (req, res) => {
 
   try {
     const data = req.body;
-    console.log("🚀 ~ exports.createRelative= ~ data:", data);
 
     const { hashcode } = await User.getOneQr();
 

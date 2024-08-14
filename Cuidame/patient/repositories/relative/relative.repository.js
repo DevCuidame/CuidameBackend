@@ -2,27 +2,30 @@ const pool = require("../../../../utils/connection");
 const RelativeModel = require("../../models/relative/relative.model");
 
 exports.createRelative = async (data) => {
-  const {   code, nombre, apellido, tipoid, numeroid, telefono, fecha_nacimiento, genero, ciudad,
+  const { code, nombre, apellido, tipoid, numeroid, telefono, fecha_nacimiento, genero, ciudad,
     departamento, direccion, rh, eps, prepagada, arl, seguro_funerario, a_cargo_id,
-    image, enterprise, nit, created_at, updated_at, photourl, imagebs64 } = data
+    created_at, updated_at, photourl, imagebs64 } = data;
+
   const query = `
     INSERT INTO pacientes (code, nombre, apellido, tipoid, numeroid, telefono, fecha_nacimiento, genero, ciudad,
-    departamento, direccion, rh, eps, prepagada, arl, seguro_funerario, a_cargo_id,
-    image, enterprise, nit, created_at, updated_at, photourl, imagebs64)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24)
+    departamento, direccion, rh, eps, prepagada, arl, seguro_funerario,  a_cargo_id, created_at, updated_at, photourl, imagebs64)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
     RETURNING *
   `;
+
   const values = [
     code, nombre, apellido, tipoid, numeroid, telefono, fecha_nacimiento, genero, ciudad,
-    departamento, direccion, rh, eps, prepagada, arl, seguro_funerario, a_cargo_id,
-    image, enterprise, nit, created_at, updated_at, photourl, imagebs64
+    departamento, direccion, rh, eps, prepagada, arl, seguro_funerario,  a_cargo_id,
+    created_at, updated_at, photourl, imagebs64
   ];
+
   const result = await pool.query(query, values);
   const { id } = result.rows[0];
+
   return new RelativeModel(
     id, code, nombre, apellido, tipoid, numeroid, telefono, fecha_nacimiento, genero, ciudad,
-    departamento, direccion, rh, eps, prepagada, arl, seguro_funerario, a_cargo_id,
-    image, enterprise, nit, created_at, updated_at, photourl, imagebs64
+    departamento, direccion, rh, eps, prepagada, arl, seguro_funerario,  a_cargo_id,
+    created_at, updated_at, photourl, imagebs64
   );
 };
 
@@ -76,7 +79,7 @@ exports.getAllRelatives = async () => {
     const {
       id, code, nombre, apellido, tipoid, numeroid, telefono, fecha_nacimiento, genero, ciudad,
       departamento, direccion, rh, eps, prepagada, arl, seguro_funerario, a_cargo_id,
-      image, enterprise, nit, created_at, updated_at, photourl,  imagebs64
+      image, enterprise, nit, created_at, updated_at, photourl, imagebs64
     } = row;
     return new RelativeModel(
       id, code, nombre, apellido, tipoid, numeroid, telefono, fecha_nacimiento, genero, ciudad,

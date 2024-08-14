@@ -562,6 +562,7 @@ CREATE TABLE provider (
 UPDATE codes SET agreement = 'Premium' WHERE license = 'Pets' AND agreement = 'H&H';
 UPDATE codes SET agreement = 'Basic' WHERE license = 'Pets' AND agreement = 'SeguroPeludo';
 UPDATE codes SET agreement = 'Free' WHERE license = 'Pets' AND agreement = 'IKE';
+UPDATE mascotas SET hashcode = 'VVU0OFAwTFQzSk5YWjBCVA' WHERE id = 49;
 
 
 
