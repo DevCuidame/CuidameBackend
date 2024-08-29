@@ -1163,7 +1163,6 @@ module.exports = {
       }
       if (ref === "profile") {
         const result = await User.findByHash(cod);
-        console.log("🚀 ~ retrieveInfo ~ result:", result)
         var data = result[0];
 
         let formattedDate = "";
