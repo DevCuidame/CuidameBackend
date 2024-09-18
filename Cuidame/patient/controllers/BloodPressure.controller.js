@@ -6,6 +6,7 @@ exports.createBloodPressure = async (req, res) => {
     const bloodPressure = await BloodPressureService.createBloodPressure(patient_id, systolic, diastolic, date);
     res.status(201).json(bloodPressure);
   } catch (error) {
+    console.log("🚀 ~ exports.createBloodPressure= ~ error:", error)
     res.status(500).json({ error: error.message });
   }
 };

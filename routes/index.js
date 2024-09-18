@@ -46,6 +46,8 @@ const userRoleRouter = require("../cuidameDoc/role/routes/userRole.router");
 const doctorRatingRouter = require("../cuidameDoc/doctor/routes/doctorRating.router");
 
 const bloodPressureRoutes = require("../Cuidame/patient/routes/bloodPressure.routes");
+const bloodGlucoseRoutes = require("../Cuidame/patient/routes/bloodGlucose.routes");
+const bloodOxygenRoutes = require("../Cuidame/patient/routes/bloodOxygen.routes");
 const respiratoryRateRoutes = require("../Cuidame/patient/routes/respiratoryRate.routes");
 const heartRateRoutes = require("./../Cuidame/patient/routes/hearthRate.routes");
 
@@ -114,6 +116,8 @@ function routerApi(app) {
   //Patient Metrics
 
   router.use("/blood-pressure", bloodPressureRoutes);
+  router.use("/blood-glucose", bloodGlucoseRoutes);
+  router.use("/blood-oxygen", bloodOxygenRoutes);
   router.use("/respiratory-rate", respiratoryRateRoutes);
   router.use("/heart-rate", heartRateRoutes);
 

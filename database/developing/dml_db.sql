@@ -583,3 +583,9 @@ ALTER TABLE	users ALTER COLUMN imagebs64 SET NOT NULL;
 ALTER TABLE	pacientes ADD COLUMN imagebs64 TEXT DEFAULT ' ';
 ALTER TABLE	pacientes ALTER COLUMN imagebs64 SET NOT NULL;
 
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+
+
+
