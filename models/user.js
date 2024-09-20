@@ -817,8 +817,8 @@ User.getCardData = (cod) => {
     p.arl,
     p.seguro_funerario AS "Seguro funerario",
     p.photourl,
-    c.nombre1 AS "Nombre del Contacto",
-    c.telefono1 AS "Teléfono del Contacto",
+    c.nombre1 AS "nombre_contacto",
+    c.telefono1 AS "telefono_contacto",
     c_fields.*,
     (
         SELECT json_agg(a_fields.tipo_alergia)

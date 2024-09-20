@@ -589,3 +589,4 @@ ALTER TABLE	pacientes ALTER COLUMN imagebs64 SET NOT NULL;
 
 
 
+UPDATE codes SET agreement = 'Premium' where hashcode = 'REU2N0c4UEdDTjBNNEM2MA';
