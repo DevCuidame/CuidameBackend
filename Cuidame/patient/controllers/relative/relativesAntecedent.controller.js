@@ -48,7 +48,6 @@ exports.updateRelativeAntecedent = async (req, res) => {
   try {
     const id_paciente = req.params.id;
     const relativeAntecedentsData = req.body;
-    console.log("🚀 ~ exports.updateRelativeAntecedent= ~ relativeAntecedentsData:", relativeAntecedentsData);
 
     const currentRelativeAntecedents = await relativeAntecedentService.getRelativeAntecedentByRelative(id_paciente) || [];
 

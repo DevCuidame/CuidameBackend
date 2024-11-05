@@ -13,6 +13,8 @@ const upload = require('./middlewares/upload');
 const uploadVaccine = require('./middlewares/uploadVaccine');
 const users = require("./routes/usersRoutes");
 const routerApi = require("./routes/index");
+const cron = require("node-cron");
+const reminderService = require("./Cuidame/patient/services/relative/reminder.service");
 
 const app = express();
 const server = http.createServer(app);
@@ -29,6 +31,11 @@ const corsOptions = {
   origin: '*',
 };
 app.use(cors(corsOptions));
+
+// Ejecutar cada minuto para verificar recordatorios pendientes
+cron.schedule("* * * * *", async () => {
+  await reminderService.checkAndSendNotifications();
+});
 
 app.use(cookieParser(Keys.secretOrKey));
 app.use(session({

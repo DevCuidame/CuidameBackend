@@ -26,6 +26,30 @@ CREATE TABLE IF NOT EXISTS public.antecedentes
     CONSTRAINT antecedentes_pkey PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS public.appointmentbreakdown
+(
+    id integer NOT NULL DEFAULT nextval('appointmentbreakdown_id_seq'::regclass),
+    user_id integer NOT NULL,
+    doctor_id integer NOT NULL,
+    appointment_id integer NOT NULL,
+    CONSTRAINT appointmentbreakdown_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.appointments
+(
+    id bigint NOT NULL DEFAULT nextval('appointments_id_seq'::regclass),
+    user_id bigint NOT NULL,
+    doctor_id bigint NOT NULL,
+    calendly_event_id character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    start_time timestamp without time zone NOT NULL,
+    end_time timestamp without time zone NOT NULL,
+    status character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT appointments_pkey PRIMARY KEY (id),
+    CONSTRAINT appointments_calendly_event_id_key UNIQUE (calendly_event_id)
+);
+
 CREATE TABLE IF NOT EXISTS public.atecedentes_familiares
 (
     id bigint NOT NULL DEFAULT nextval('atecedentes_familiares_id_seq'::regclass),
@@ -53,6 +77,44 @@ CREATE TABLE IF NOT EXISTS public.bathroomhairdresser
     calendy character varying(100) COLLATE pg_catalog."default" NOT NULL,
     price character varying(10) COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT bathroomhairdresser_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.blood_glucose
+(
+    id integer NOT NULL DEFAULT nextval('blood_glucose_id_seq'::regclass),
+    patient_id integer NOT NULL,
+    rate integer NOT NULL,
+    date timestamp without time zone NOT NULL,
+    CONSTRAINT blood_glucose_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.blood_oxygen
+(
+    id integer NOT NULL DEFAULT nextval('blood_oxygen_id_seq'::regclass),
+    patient_id integer NOT NULL,
+    rate integer NOT NULL,
+    date timestamp without time zone NOT NULL,
+    CONSTRAINT blood_oxygen_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.blood_pressure
+(
+    id integer NOT NULL DEFAULT nextval('blood_pressure_id_seq'::regclass),
+    patient_id integer NOT NULL,
+    systolic integer NOT NULL,
+    diastolic integer NOT NULL,
+    date timestamp without time zone NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT blood_pressure_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.bonds
+(
+    id integer NOT NULL DEFAULT nextval('bonds_id_seq'::regclass),
+    health_insurance_id integer NOT NULL,
+    name character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    price numeric(10, 2) NOT NULL,
+    CONSTRAINT bonds_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.clinics_services
@@ -85,6 +147,18 @@ CREATE TABLE IF NOT EXISTS public.codes
     CONSTRAINT codes_hashcode_key UNIQUE (hashcode)
 );
 
+CREATE TABLE IF NOT EXISTS public.company
+(
+    id integer NOT NULL DEFAULT nextval('company_id_seq'::regclass),
+    name character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    address text COLLATE pg_catalog."default" NOT NULL,
+    nit character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    phone character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    contact character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    city_id integer NOT NULL,
+    CONSTRAINT company_pkey PRIMARY KEY (id)
+);
+
 CREATE TABLE IF NOT EXISTS public.condicion
 (
     id bigint NOT NULL DEFAULT nextval('condicion_id_seq'::regclass),
@@ -111,6 +185,26 @@ CREATE TABLE IF NOT EXISTS public.contactos
     created_at timestamp(0) without time zone NOT NULL,
     updated_at timestamp(0) without time zone NOT NULL,
     CONSTRAINT contactos_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.contract
+(
+    id integer NOT NULL DEFAULT nextval('contract_id_seq'::regclass),
+    health_insurance_id integer NOT NULL,
+    type character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    start_date date NOT NULL,
+    end_date date NOT NULL,
+    CONSTRAINT contract_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.contractservices
+(
+    id integer NOT NULL DEFAULT nextval('contractservices_id_seq'::regclass),
+    contract_id integer NOT NULL,
+    name character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    type character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    price numeric(10, 2) NOT NULL,
+    CONSTRAINT contractservices_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.dbbomberos
@@ -177,6 +271,56 @@ CREATE TABLE IF NOT EXISTS public.departments
     CONSTRAINT departments_pkey PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS public.diagnostic
+(
+    id integer NOT NULL DEFAULT nextval('diagnostic_id_seq'::regclass),
+    medical_consult_id integer NOT NULL,
+    diagnostic text COLLATE pg_catalog."default" NOT NULL,
+    epicrisis text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT diagnostic_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.doctor
+(
+    id integer NOT NULL DEFAULT nextval('doctor_id_seq'::regclass),
+    first_name character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    last_name character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    identification_type character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    identification_number character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    city_id integer NOT NULL,
+    address text COLLATE pg_catalog."default" NOT NULL,
+    phone character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    medical_record text COLLATE pg_catalog."default" NOT NULL,
+    medical_specialist text COLLATE pg_catalog."default" NOT NULL,
+    landline_phone character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    note text COLLATE pg_catalog."default" NOT NULL,
+    rating integer NOT NULL,
+    pub_name character varying COLLATE pg_catalog."default",
+    priv_name character varying COLLATE pg_catalog."default",
+    file_bs64 text COLLATE pg_catalog."default",
+    icon_bs64 text COLLATE pg_catalog."default",
+    CONSTRAINT doctor_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.doctorrelative
+(
+    id integer NOT NULL DEFAULT nextval('doctorrelative_id_seq'::regclass),
+    doctor_id integer NOT NULL,
+    relative_id integer NOT NULL,
+    service_id integer NOT NULL,
+    CONSTRAINT doctorrelative_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.doctorservice
+(
+    id integer NOT NULL DEFAULT nextval('doctorservice_id_seq'::regclass),
+    name character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    visit_price numeric(10, 2) NOT NULL,
+    doctor_id integer NOT NULL,
+    discount numeric(5, 2) NOT NULL,
+    CONSTRAINT doctorservice_pkey PRIMARY KEY (id)
+);
+
 CREATE TABLE IF NOT EXISTS public.documents
 (
     id integer NOT NULL DEFAULT nextval('documents_id_seq'::regclass),
@@ -185,6 +329,16 @@ CREATE TABLE IF NOT EXISTS public.documents
     priv_name character varying(255) COLLATE pg_catalog."default" NOT NULL,
     file_bs64 text COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT documents_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.emergencycontact
+(
+    id integer NOT NULL DEFAULT nextval('emergencycontact_id_seq'::regclass),
+    relative_id integer NOT NULL,
+    first_name character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    last_name character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    phone character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT emergencycontact_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.enfermedades
@@ -204,6 +358,64 @@ CREATE TABLE IF NOT EXISTS public.establishment
     own boolean NOT NULL,
     full_name character varying(255) COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT establishment_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.familiarrecords
+(
+    id integer NOT NULL DEFAULT nextval('familiarrecords_id_seq'::regclass),
+    medical_consult_id integer NOT NULL,
+    relative text COLLATE pg_catalog."default" NOT NULL,
+    diagnostic text COLLATE pg_catalog."default" NOT NULL,
+    records text COLLATE pg_catalog."default" NOT NULL,
+    hemorrhagic boolean NOT NULL,
+    thrombotic boolean NOT NULL,
+    oncological boolean NOT NULL,
+    CONSTRAINT familiarrecords_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.gynecoobstetrics
+(
+    id integer NOT NULL DEFAULT nextval('gynecoobstetrics_id_seq'::regclass),
+    medical_consult_id integer NOT NULL,
+    births integer NOT NULL,
+    abortions integer NOT NULL,
+    cesarean integer NOT NULL,
+    gestations integer NOT NULL,
+    menstrual_cycles character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    family_planning character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT gynecoobstetrics_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.habits
+(
+    id integer NOT NULL DEFAULT nextval('habits_id_seq'::regclass),
+    medical_consult_id integer NOT NULL,
+    smoke boolean NOT NULL,
+    liquor boolean NOT NULL,
+    other text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT habits_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.healthinsurance
+(
+    id integer NOT NULL DEFAULT nextval('healthinsurance_id_seq'::regclass),
+    company character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    address1 text COLLATE pg_catalog."default" NOT NULL,
+    address2 text COLLATE pg_catalog."default" NOT NULL,
+    city character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    phone character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    email character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT healthinsurance_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.heart_rate
+(
+    id integer NOT NULL DEFAULT nextval('heart_rate_id_seq'::regclass),
+    patient_id integer NOT NULL,
+    rate integer NOT NULL,
+    date timestamp without time zone NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT heart_rate_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.hotelnursery
@@ -230,6 +442,18 @@ CREATE TABLE IF NOT EXISTS public.ingreso_salud
     numeroid character varying(80) COLLATE pg_catalog."default" NOT NULL,
     hora_ingreso timestamp(0) without time zone NOT NULL,
     CONSTRAINT ingreso_salud_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.laboratory
+(
+    id integer NOT NULL DEFAULT nextval('laboratory_id_seq'::regclass),
+    medical_consult_id integer NOT NULL,
+    exam_type character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    exam character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    date date NOT NULL,
+    result text COLLATE pg_catalog."default" NOT NULL,
+    pathology_report bytea NOT NULL,
+    CONSTRAINT laboratory_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.legal_representative
@@ -285,6 +509,17 @@ CREATE TABLE IF NOT EXISTS public.mascotas
     CONSTRAINT mascotas_pkey PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS public.medicalconsultation
+(
+    id integer NOT NULL DEFAULT nextval('medicalconsultation_id_seq'::regclass),
+    relative_id integer NOT NULL,
+    type character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    city_id integer NOT NULL,
+    date date NOT NULL,
+    reason text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT medicalconsultation_pkey PRIMARY KEY (id)
+);
+
 CREATE TABLE IF NOT EXISTS public.medicamentos
 (
     id bigint NOT NULL DEFAULT nextval('medicamentos_id_seq'::regclass),
@@ -295,6 +530,30 @@ CREATE TABLE IF NOT EXISTS public.medicamentos
     created_at timestamp(0) without time zone NOT NULL,
     updated_at timestamp(0) without time zone NOT NULL,
     CONSTRAINT medicamentos_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.moderatorfee
+(
+    id integer NOT NULL DEFAULT nextval('moderatorfee_id_seq'::regclass),
+    health_insurance_id integer NOT NULL,
+    name character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    price integer NOT NULL,
+    income_range character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    category character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    copayment numeric(10, 2) NOT NULL,
+    CONSTRAINT moderatorfee_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.other_specialties
+(
+    id integer NOT NULL DEFAULT nextval('other_specialties_id_seq'::regclass),
+    medical_consult_id integer NOT NULL,
+    type character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    date date NOT NULL,
+    concept character varying(500) COLLATE pg_catalog."default" NOT NULL,
+    result text COLLATE pg_catalog."default" NOT NULL,
+    pathology_report bytea NOT NULL,
+    CONSTRAINT other_specialties_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.pacientes
@@ -323,10 +582,18 @@ CREATE TABLE IF NOT EXISTS public.pacientes
     created_at timestamp(0) without time zone NOT NULL,
     updated_at timestamp(0) without time zone NOT NULL,
     photourl character varying(255) COLLATE pg_catalog."default",
-    pub_name character varying(255) COLLATE pg_catalog."default",
-    file_bs64 TEXT COLLATE pg_catalog."default",
+    imagebs64 text COLLATE pg_catalog."default",
     CONSTRAINT pacientes_pkey PRIMARY KEY (id),
     CONSTRAINT pacientes_code_key UNIQUE (code)
+);
+
+CREATE TABLE IF NOT EXISTS public.paymentbill
+(
+    id integer NOT NULL DEFAULT nextval('paymentbill_id_seq'::regclass),
+    health_insurance_id integer NOT NULL,
+    relative_id integer NOT NULL,
+    doctor_service_id integer NOT NULL,
+    CONSTRAINT paymentbill_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.personal_salud
@@ -404,6 +671,28 @@ CREATE TABLE IF NOT EXISTS public.petsveterinarian
     CONSTRAINT petsveterinarian_pkey PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS public.population
+(
+    id integer NOT NULL DEFAULT nextval('population_id_seq'::regclass),
+    first_name character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    last_name character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    identification_type character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    identification_number character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    age integer NOT NULL,
+    gender character varying(10) COLLATE pg_catalog."default" NOT NULL,
+    marital_status character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    place_of_birth text COLLATE pg_catalog."default" NOT NULL,
+    address text COLLATE pg_catalog."default" NOT NULL,
+    category character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    regiment_type boolean NOT NULL,
+    phone character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    occupation character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    status character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    "position" character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    contract_id integer NOT NULL,
+    CONSTRAINT population_pkey PRIMARY KEY (id)
+);
+
 CREATE TABLE IF NOT EXISTS public.provider
 (
     id integer NOT NULL DEFAULT nextval('provider_id_seq'::regclass),
@@ -432,11 +721,84 @@ CREATE TABLE IF NOT EXISTS public.provider_services
     CONSTRAINT provider_services_pkey PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS public.records
+(
+    id integer NOT NULL DEFAULT nextval('records_id_seq'::regclass),
+    medical_consult_id integer NOT NULL,
+    type character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    date date NOT NULL,
+    description text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT records_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.regimenttype
+(
+    id integer NOT NULL DEFAULT nextval('regimenttype_id_seq'::regclass),
+    health_insurance_id integer NOT NULL,
+    regiment_type boolean NOT NULL,
+    category character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    max_value_event numeric(10, 2) NOT NULL,
+    CONSTRAINT regimenttype_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.relative
+(
+    id integer NOT NULL DEFAULT nextval('relative_id_seq'::regclass),
+    user_id bigint NOT NULL,
+    doctor_id bigint NOT NULL,
+    first_name character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    last_name character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    identification_type character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    identification_number character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    age integer NOT NULL,
+    gender character varying(10) COLLATE pg_catalog."default" NOT NULL,
+    marital_status character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    place_of_birth text COLLATE pg_catalog."default" NOT NULL,
+    city_id integer NOT NULL,
+    address text COLLATE pg_catalog."default" NOT NULL,
+    phone character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    occupation character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    "position" character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    health_insurance_id integer NOT NULL,
+    company_id integer NOT NULL,
+    status character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT relative_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.respiratory_rate
+(
+    id integer NOT NULL DEFAULT nextval('respiratory_rate_id_seq'::regclass),
+    patient_id integer NOT NULL,
+    rate integer NOT NULL,
+    date timestamp without time zone NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT respiratory_rate_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.role
+(
+    id integer NOT NULL DEFAULT nextval('role_id_seq'::regclass),
+    name character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    status boolean NOT NULL,
+    CONSTRAINT role_pkey PRIMARY KEY (id)
+);
+
 CREATE TABLE IF NOT EXISTS public.services
 (
     id integer NOT NULL DEFAULT nextval('services_id_seq'::regclass),
     name character varying(255) COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT services_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.sites
+(
+    id integer NOT NULL DEFAULT nextval('sites_id_seq'::regclass),
+    address text COLLATE pg_catalog."default" NOT NULL,
+    phone character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    contact character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    city_id integer NOT NULL,
+    company_id integer NOT NULL,
+    CONSTRAINT sites_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.townships
@@ -446,6 +808,14 @@ CREATE TABLE IF NOT EXISTS public.townships
     code character varying(255) COLLATE pg_catalog."default" NOT NULL,
     name character varying(255) COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT townships_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.userrole
+(
+    id integer NOT NULL DEFAULT nextval('userrole_id_seq'::regclass),
+    user_id integer NOT NULL,
+    role_id integer NOT NULL,
+    CONSTRAINT userrole_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.users
@@ -470,6 +840,9 @@ CREATE TABLE IF NOT EXISTS public.users
     created_at timestamp(0) without time zone NOT NULL,
     updated_at timestamp(0) without time zone NOT NULL,
     service character varying(20) COLLATE pg_catalog."default",
+    pubname character varying(100) COLLATE pg_catalog."default",
+    privname character varying(100) COLLATE pg_catalog."default",
+    imagebs64 text COLLATE pg_catalog."default",
     CONSTRAINT users_pkey PRIMARY KEY (id),
     CONSTRAINT users_code_key UNIQUE (code),
     CONSTRAINT users_email_key UNIQUE (email),
@@ -533,6 +906,22 @@ CREATE TABLE IF NOT EXISTS public.veterinary_clinics
     CONSTRAINT veterinary_clinics_pkey PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS public.vitalsignals
+(
+    id integer NOT NULL DEFAULT nextval('vitalsignals_id_seq'::regclass),
+    medical_consult_id integer NOT NULL,
+    weight numeric(5, 2) NOT NULL,
+    size numeric(5, 2) NOT NULL,
+    imc numeric(5, 2) NOT NULL,
+    blood_pressure character varying(10) COLLATE pg_catalog."default" NOT NULL,
+    heart_frequency integer NOT NULL,
+    system character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    body_area character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    symptom text COLLATE pg_catalog."default" NOT NULL,
+    description text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT vitalsignals_pkey PRIMARY KEY (id)
+);
+
 CREATE TABLE IF NOT EXISTS public.wellnessspa
 (
     id bigint NOT NULL DEFAULT nextval('wellnessspa_id_seq'::regclass),
@@ -564,6 +953,51 @@ ALTER TABLE IF EXISTS public.antecedentes
     ON DELETE CASCADE;
 
 
+ALTER TABLE IF EXISTS public.appointmentbreakdown
+    ADD CONSTRAINT appointmentbreakdown_appointment_id_fkey FOREIGN KEY (appointment_id)
+    REFERENCES public.appointments (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+CREATE INDEX IF NOT EXISTS idx_appointmentbreakdown_appointment_id
+    ON public.appointmentbreakdown(appointment_id);
+
+
+ALTER TABLE IF EXISTS public.appointmentbreakdown
+    ADD CONSTRAINT appointmentbreakdown_doctor_id_fkey FOREIGN KEY (doctor_id)
+    REFERENCES public.doctor (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+CREATE INDEX IF NOT EXISTS idx_appointmentbreakdown_doctor_id
+    ON public.appointmentbreakdown(doctor_id);
+
+
+ALTER TABLE IF EXISTS public.appointmentbreakdown
+    ADD CONSTRAINT appointmentbreakdown_user_id_fkey FOREIGN KEY (user_id)
+    REFERENCES public.users (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+CREATE INDEX IF NOT EXISTS idx_appointmentbreakdown_user_id
+    ON public.appointmentbreakdown(user_id);
+
+
+ALTER TABLE IF EXISTS public.appointments
+    ADD CONSTRAINT appointments_doctor_id_fkey FOREIGN KEY (doctor_id)
+    REFERENCES public.doctor (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+CREATE INDEX IF NOT EXISTS idx_appointments_doctor_id
+    ON public.appointments(doctor_id);
+
+
+ALTER TABLE IF EXISTS public.appointments
+    ADD CONSTRAINT appointments_user_id_fkey FOREIGN KEY (user_id)
+    REFERENCES public.users (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+CREATE INDEX IF NOT EXISTS idx_appointments_user_id
+    ON public.appointments(user_id);
+
+
 ALTER TABLE IF EXISTS public.atecedentes_familiares
     ADD CONSTRAINT atecedentes_familiares_id_paciente_fkey FOREIGN KEY (id_paciente)
     REFERENCES public.pacientes (id) MATCH SIMPLE
@@ -576,6 +1010,38 @@ ALTER TABLE IF EXISTS public.bathroomhairdresser
     REFERENCES public.townships (id) MATCH SIMPLE
     ON UPDATE CASCADE
     ON DELETE CASCADE;
+
+
+ALTER TABLE IF EXISTS public.blood_glucose
+    ADD CONSTRAINT fk_patient FOREIGN KEY (patient_id)
+    REFERENCES public.pacientes (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+
+
+ALTER TABLE IF EXISTS public.blood_oxygen
+    ADD CONSTRAINT fk_patient FOREIGN KEY (patient_id)
+    REFERENCES public.pacientes (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+
+
+ALTER TABLE IF EXISTS public.blood_pressure
+    ADD CONSTRAINT blood_pressure_patient_id_fkey FOREIGN KEY (patient_id)
+    REFERENCES public.pacientes (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_blood_pressure_patient_id
+    ON public.blood_pressure(patient_id);
+
+
+ALTER TABLE IF EXISTS public.bonds
+    ADD CONSTRAINT bonds_health_insurance_id_fkey FOREIGN KEY (health_insurance_id)
+    REFERENCES public.healthinsurance (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_bonds_health_insurance_id
+    ON public.bonds(health_insurance_id);
 
 
 ALTER TABLE IF EXISTS public.clinics_services_breakdown
@@ -592,6 +1058,15 @@ ALTER TABLE IF EXISTS public.clinics_services_breakdown
     ON DELETE NO ACTION;
 
 
+ALTER TABLE IF EXISTS public.company
+    ADD CONSTRAINT company_city_id_fkey FOREIGN KEY (city_id)
+    REFERENCES public.townships (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+CREATE INDEX IF NOT EXISTS idx_company_city_id
+    ON public.company(city_id);
+
+
 ALTER TABLE IF EXISTS public.condicion
     ADD CONSTRAINT condicion_id_paciente_fkey FOREIGN KEY (id_paciente)
     REFERENCES public.pacientes (id) MATCH SIMPLE
@@ -606,11 +1081,83 @@ ALTER TABLE IF EXISTS public.contactos
     ON DELETE CASCADE;
 
 
+ALTER TABLE IF EXISTS public.contract
+    ADD CONSTRAINT contract_health_insurance_id_fkey FOREIGN KEY (health_insurance_id)
+    REFERENCES public.healthinsurance (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_contract_health_insurance_id
+    ON public.contract(health_insurance_id);
+
+
+ALTER TABLE IF EXISTS public.contractservices
+    ADD CONSTRAINT contractservices_contract_id_fkey FOREIGN KEY (contract_id)
+    REFERENCES public.contract (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+CREATE INDEX IF NOT EXISTS idx_contractservices_contract_id
+    ON public.contractservices(contract_id);
+
+
+ALTER TABLE IF EXISTS public.diagnostic
+    ADD CONSTRAINT diagnostic_medical_consult_id_fkey FOREIGN KEY (medical_consult_id)
+    REFERENCES public.medicalconsultation (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_diagnostic_medical_consult_id
+    ON public.diagnostic(medical_consult_id);
+
+
+ALTER TABLE IF EXISTS public.doctor
+    ADD CONSTRAINT doctor_city_id_fkey FOREIGN KEY (city_id)
+    REFERENCES public.townships (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+CREATE INDEX IF NOT EXISTS idx_doctor_city_id
+    ON public.doctor(city_id);
+
+
+ALTER TABLE IF EXISTS public.doctorrelative
+    ADD CONSTRAINT doctorrelative_doctor_id_fkey FOREIGN KEY (doctor_id)
+    REFERENCES public.doctor (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_doctorrelative_doctor_id
+    ON public.doctorrelative(doctor_id);
+
+
+ALTER TABLE IF EXISTS public.doctorrelative
+    ADD CONSTRAINT doctorrelative_relative_id_fkey FOREIGN KEY (relative_id)
+    REFERENCES public.relative (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_doctorrelative_relative_id
+    ON public.doctorrelative(relative_id);
+
+
+ALTER TABLE IF EXISTS public.doctorservice
+    ADD CONSTRAINT doctorservice_doctor_id_fkey FOREIGN KEY (doctor_id)
+    REFERENCES public.doctor (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+CREATE INDEX IF NOT EXISTS idx_doctorservice_doctor_id
+    ON public.doctorservice(doctor_id);
+
+
 ALTER TABLE IF EXISTS public.documents
     ADD CONSTRAINT documents_provider_id_fkey FOREIGN KEY (provider_id)
     REFERENCES public.provider (id) MATCH SIMPLE
     ON UPDATE CASCADE
     ON DELETE CASCADE;
+
+
+ALTER TABLE IF EXISTS public.emergencycontact
+    ADD CONSTRAINT emergencycontact_relative_id_fkey FOREIGN KEY (relative_id)
+    REFERENCES public.relative (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+CREATE INDEX IF NOT EXISTS idx_emergencycontact_relative_id
+    ON public.emergencycontact(relative_id);
 
 
 ALTER TABLE IF EXISTS public.enfermedades
@@ -627,11 +1174,56 @@ ALTER TABLE IF EXISTS public.establishment
     ON DELETE CASCADE;
 
 
+ALTER TABLE IF EXISTS public.familiarrecords
+    ADD CONSTRAINT familiarrecords_medical_consult_id_fkey FOREIGN KEY (medical_consult_id)
+    REFERENCES public.medicalconsultation (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_familiarrecords_medical_consult_id
+    ON public.familiarrecords(medical_consult_id);
+
+
+ALTER TABLE IF EXISTS public.gynecoobstetrics
+    ADD CONSTRAINT gynecoobstetrics_medical_consult_id_fkey FOREIGN KEY (medical_consult_id)
+    REFERENCES public.medicalconsultation (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_gynecoobstetrics_medical_consult_id
+    ON public.gynecoobstetrics(medical_consult_id);
+
+
+ALTER TABLE IF EXISTS public.habits
+    ADD CONSTRAINT habits_medical_consult_id_fkey FOREIGN KEY (medical_consult_id)
+    REFERENCES public.medicalconsultation (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_habits_medical_consult_id
+    ON public.habits(medical_consult_id);
+
+
+ALTER TABLE IF EXISTS public.heart_rate
+    ADD CONSTRAINT heart_rate_patient_id_fkey FOREIGN KEY (patient_id)
+    REFERENCES public.pacientes (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_heart_rate_patient_id
+    ON public.heart_rate(patient_id);
+
+
 ALTER TABLE IF EXISTS public.hotelnursery
     ADD CONSTRAINT hotelnursery_city_id_fkey FOREIGN KEY (city_id)
     REFERENCES public.townships (id) MATCH SIMPLE
     ON UPDATE CASCADE
     ON DELETE CASCADE;
+
+
+ALTER TABLE IF EXISTS public.laboratory
+    ADD CONSTRAINT laboratory_medical_consult_id_fkey FOREIGN KEY (medical_consult_id)
+    REFERENCES public.medicalconsultation (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_laboratory_medical_consult_id
+    ON public.laboratory(medical_consult_id);
 
 
 ALTER TABLE IF EXISTS public.legal_representative
@@ -648,6 +1240,24 @@ ALTER TABLE IF EXISTS public.mascotas
     ON DELETE CASCADE;
 
 
+ALTER TABLE IF EXISTS public.medicalconsultation
+    ADD CONSTRAINT medicalconsultation_city_id_fkey FOREIGN KEY (city_id)
+    REFERENCES public.townships (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+CREATE INDEX IF NOT EXISTS idx_medicalconsultation_city_id
+    ON public.medicalconsultation(city_id);
+
+
+ALTER TABLE IF EXISTS public.medicalconsultation
+    ADD CONSTRAINT medicalconsultation_relative_id_fkey FOREIGN KEY (relative_id)
+    REFERENCES public.relative (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+CREATE INDEX IF NOT EXISTS idx_medicalconsultation_relative_id
+    ON public.medicalconsultation(relative_id);
+
+
 ALTER TABLE IF EXISTS public.medicamentos
     ADD CONSTRAINT medicamentos_id_paciente_fkey FOREIGN KEY (id_paciente)
     REFERENCES public.pacientes (id) MATCH SIMPLE
@@ -655,11 +1265,56 @@ ALTER TABLE IF EXISTS public.medicamentos
     ON DELETE CASCADE;
 
 
+ALTER TABLE IF EXISTS public.moderatorfee
+    ADD CONSTRAINT moderatorfee_health_insurance_id_fkey FOREIGN KEY (health_insurance_id)
+    REFERENCES public.healthinsurance (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_moderatorfee_health_insurance_id
+    ON public.moderatorfee(health_insurance_id);
+
+
+ALTER TABLE IF EXISTS public.other_specialties
+    ADD CONSTRAINT other_specialties_medical_consult_id_fkey FOREIGN KEY (medical_consult_id)
+    REFERENCES public.medicalconsultation (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_other_specialties_medical_consult_id
+    ON public.other_specialties(medical_consult_id);
+
+
 ALTER TABLE IF EXISTS public.pacientes
     ADD CONSTRAINT pacientes_a_cargo_id_fkey FOREIGN KEY (a_cargo_id)
     REFERENCES public.users (id) MATCH SIMPLE
     ON UPDATE CASCADE
     ON DELETE CASCADE;
+
+
+ALTER TABLE IF EXISTS public.paymentbill
+    ADD CONSTRAINT paymentbill_doctor_service_id_fkey FOREIGN KEY (doctor_service_id)
+    REFERENCES public.doctorservice (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+CREATE INDEX IF NOT EXISTS idx_paymentbill_doctor_service_id
+    ON public.paymentbill(doctor_service_id);
+
+
+ALTER TABLE IF EXISTS public.paymentbill
+    ADD CONSTRAINT paymentbill_health_insurance_id_fkey FOREIGN KEY (health_insurance_id)
+    REFERENCES public.healthinsurance (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+CREATE INDEX IF NOT EXISTS idx_paymentbill_health_insurance_id
+    ON public.paymentbill(health_insurance_id);
+
+
+ALTER TABLE IF EXISTS public.paymentbill
+    ADD CONSTRAINT paymentbill_relative_id_fkey FOREIGN KEY (relative_id)
+    REFERENCES public.relative (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+CREATE INDEX IF NOT EXISTS idx_paymentbill_relative_id
+    ON public.paymentbill(relative_id);
 
 
 ALTER TABLE IF EXISTS public.pertenencias
@@ -704,6 +1359,15 @@ ALTER TABLE IF EXISTS public.petsveterinarian
     ON DELETE CASCADE;
 
 
+ALTER TABLE IF EXISTS public.population
+    ADD CONSTRAINT population_contract_id_fkey FOREIGN KEY (contract_id)
+    REFERENCES public.contract (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_population_contract_id
+    ON public.population(contract_id);
+
+
 ALTER TABLE IF EXISTS public.provider
     ADD CONSTRAINT provider_city_fkey FOREIGN KEY (city)
     REFERENCES public.townships (id) MATCH SIMPLE
@@ -725,10 +1389,114 @@ ALTER TABLE IF EXISTS public.provider_services
     ON DELETE CASCADE;
 
 
+ALTER TABLE IF EXISTS public.records
+    ADD CONSTRAINT records_medical_consult_id_fkey FOREIGN KEY (medical_consult_id)
+    REFERENCES public.medicalconsultation (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_records_medical_consult_id
+    ON public.records(medical_consult_id);
+
+
+ALTER TABLE IF EXISTS public.regimenttype
+    ADD CONSTRAINT regimenttype_health_insurance_id_fkey FOREIGN KEY (health_insurance_id)
+    REFERENCES public.healthinsurance (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_regimenttype_health_insurance_id
+    ON public.regimenttype(health_insurance_id);
+
+
+ALTER TABLE IF EXISTS public.relative
+    ADD CONSTRAINT relative_city_id_fkey FOREIGN KEY (city_id)
+    REFERENCES public.townships (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+CREATE INDEX IF NOT EXISTS idx_relative_city_id
+    ON public.relative(city_id);
+
+
+ALTER TABLE IF EXISTS public.relative
+    ADD CONSTRAINT relative_company_id_fkey FOREIGN KEY (company_id)
+    REFERENCES public.company (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_relative_company_id
+    ON public.relative(company_id);
+
+
+ALTER TABLE IF EXISTS public.relative
+    ADD CONSTRAINT relative_doctor_id_fkey FOREIGN KEY (doctor_id)
+    REFERENCES public.doctor (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_relative_doctor_id
+    ON public.relative(doctor_id);
+
+
+ALTER TABLE IF EXISTS public.relative
+    ADD CONSTRAINT relative_health_insurance_id_fkey FOREIGN KEY (health_insurance_id)
+    REFERENCES public.healthinsurance (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_relative_health_insurance_id
+    ON public.relative(health_insurance_id);
+
+
+ALTER TABLE IF EXISTS public.relative
+    ADD CONSTRAINT relative_user_id_fkey FOREIGN KEY (user_id)
+    REFERENCES public.users (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_relative_user_id
+    ON public.relative(user_id);
+
+
+ALTER TABLE IF EXISTS public.respiratory_rate
+    ADD CONSTRAINT respiratory_rate_patient_id_fkey FOREIGN KEY (patient_id)
+    REFERENCES public.pacientes (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_respiratory_rate_patient_id
+    ON public.respiratory_rate(patient_id);
+
+
+ALTER TABLE IF EXISTS public.sites
+    ADD CONSTRAINT sites_city_id_fkey FOREIGN KEY (city_id)
+    REFERENCES public.townships (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+CREATE INDEX IF NOT EXISTS idx_sites_city_id
+    ON public.sites(city_id);
+
+
+ALTER TABLE IF EXISTS public.sites
+    ADD CONSTRAINT sites_company_id_fkey FOREIGN KEY (company_id)
+    REFERENCES public.company (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_sites_company_id
+    ON public.sites(company_id);
+
+
 ALTER TABLE IF EXISTS public.townships
     ADD CONSTRAINT townships_department_id_fkey FOREIGN KEY (department_id)
     REFERENCES public.departments (id) MATCH SIMPLE
     ON UPDATE CASCADE
+    ON DELETE CASCADE;
+
+
+ALTER TABLE IF EXISTS public.userrole
+    ADD CONSTRAINT userrole_role_id_fkey FOREIGN KEY (role_id)
+    REFERENCES public.role (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+
+
+ALTER TABLE IF EXISTS public.userrole
+    ADD CONSTRAINT userrole_user_id_fkey FOREIGN KEY (user_id)
+    REFERENCES public.users (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
     ON DELETE CASCADE;
 
 
@@ -768,6 +1536,15 @@ ALTER TABLE IF EXISTS public.veterinary_clinics
     REFERENCES public.townships (id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
+
+
+ALTER TABLE IF EXISTS public.vitalsignals
+    ADD CONSTRAINT vitalsignals_medical_consult_id_fkey FOREIGN KEY (medical_consult_id)
+    REFERENCES public.medicalconsultation (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_vitalsignals_medical_consult_id
+    ON public.vitalsignals(medical_consult_id);
 
 
 ALTER TABLE IF EXISTS public.wellnessspa

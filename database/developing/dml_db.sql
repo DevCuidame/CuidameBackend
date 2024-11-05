@@ -563,6 +563,7 @@ UPDATE codes SET agreement = 'Premium' WHERE license = 'Pets' AND agreement = 'H
 UPDATE codes SET agreement = 'Basic' WHERE license = 'Pets' AND agreement = 'SeguroPeludo';
 UPDATE codes SET agreement = 'Free' WHERE license = 'Pets' AND agreement = 'IKE';
 UPDATE mascotas SET hashcode = 'VVU0OFAwTFQzSk5YWjBCVA' WHERE id = 49;
+UPDATE mascotas SET hashcode = 'VU1KMjhUSlJZR1RWRjQ2Qw' WHERE petid = '5218102024';
 
 
 
@@ -589,4 +590,48 @@ ALTER TABLE	pacientes ALTER COLUMN imagebs64 SET NOT NULL;
 
 
 
-UPDATE codes SET agreement = 'Premium' where hashcode = 'REU2N0c4UEdDTjBNNEM2MA';
+UPDATE codes SET agreement = 'Premium' where hashcode = 'STM3MDFBWFZOMTlSOERCUw';
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------
+Medicamentos
+
+
+-- Create medications table with additional fields
+CREATE TABLE medications (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,                     -- Nombre del medicamento
+    description TEXT,                               -- Descripción general del medicamento
+    quantity INT NOT NULL,                          -- Cantidad disponible
+    dosage VARCHAR(100),                            -- Dosis recomendada (ej: "500mg")
+    frequency VARCHAR(100),                         -- Frecuencia de uso (ej: "cada 8 horas")
+    manufacturer VARCHAR(255),                      -- Fabricante del medicamento
+    expiration_date DATE NOT NULL,                  -- Fecha de vencimiento
+    prescription_required BOOLEAN DEFAULT false,    -- Si el medicamento requiere receta
+    category VARCHAR(100),                          -- Categoría del medicamento (ej: "Antibiótico")
+    administration_method VARCHAR(100),             -- Método de administración (ej: "Oral", "Inyección")
+    side_effects TEXT,                              -- Efectos secundarios conocidos
+    storage_instructions TEXT,                      -- Instrucciones de almacenamiento (ej: "Mantener refrigerado")
+    relative_id INT REFERENCES pacientes(id),        -- Relación con el paciente al que pertenece
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Fecha de creación del registro
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- Fecha de última actualización
+);
+
+
+-- Create reminders table
+CREATE TABLE reminders (
+    id SERIAL PRIMARY KEY,
+    medication_id INT REFERENCES medications(id),
+    reminder_datetime TIMESTAMP NOT NULL,
+    message VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- Modificar tabla de recordatorios para añadir un campo de estado de notificación
+ALTER TABLE reminders
+ADD COLUMN notified BOOLEAN DEFAULT false;
+
