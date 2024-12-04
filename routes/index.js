@@ -61,6 +61,10 @@ const relativeRoutes = require("../Cuidame/patient/routes/relative/relative.rout
 const relativesAntecedentRoutes = require("../Cuidame/patient/routes/relative/relativesAntecedent.routes")
 const vaccineRoutes = require("../Cuidame/patient/routes/relative/vaccine.routes")
 
+// Medicine Control
+const medicineControl = require("../Cuidame/medicineControl/routes/oreder.routes")
+const imageMedicineControl = require("../Cuidame/medicineControl/routes/imagesOrder.routes")
+
 function routerApi(app) {
   const router = express.Router();
   app.use("/api", router);
@@ -130,8 +134,8 @@ function routerApi(app) {
   router.use("/relative-cuidame", relativeRoutes);
   router.use("/relative-antecedent", relativesAntecedentRoutes);
   router.use("/vaccine", vaccineRoutes);
-
-
+  router.use("/medicine-control", medicineControl);
+  router.use("/images-medicine", imageMedicineControl);
 
 }
 
