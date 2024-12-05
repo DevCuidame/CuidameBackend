@@ -1,4 +1,4 @@
-const orderRepository = require('../repositories/order.repository');
+const orderRepository = require('../../repositories/relative/order.repository');
 
 exports.createOrder = async (orderData) => {
   return await orderRepository.createOrder(orderData);

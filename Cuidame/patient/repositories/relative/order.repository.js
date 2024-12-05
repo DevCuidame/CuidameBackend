@@ -1,5 +1,5 @@
-const pool = require("../../../utils/connection");
-const Order = require("../models/order.model");
+const pool = require("../../../../utils/connection");
+const Order = require("../../models/relative/order.model");
 
 // Crear una nueva orden
 exports.createOrder = async (orderData) => {

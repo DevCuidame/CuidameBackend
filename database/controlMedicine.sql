@@ -25,8 +25,9 @@ CREATE TABLE controlMedicines (
 
 CREATE TABLE imagesmedicine (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,           -- Nombre de la imagen
+    name VARCHAR(100) NOT NULL,           -- Nombre de la imagen
     path TEXT NOT NULL,                   -- Ruta de almacenamiento
+    category VARCHAR(50) NOT NULL,            -- Nombre de la imagen
 	id_order INT NOT NULL,                -- ID de la orden de medicamentos
     created_at TIMESTAMP DEFAULT NOW(),   -- Fecha de creación
 

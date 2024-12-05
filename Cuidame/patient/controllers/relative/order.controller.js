@@ -1,9 +1,8 @@
-const orderService = require("../services/order.service");
+const orderService = require("../../services/relative/order.service");
 
 exports.createOrder = async (req, res) => {
     try {
         const orderData = req.body;
-        console.log("Order Data Received in Controller:", JSON.stringify(orderData, null, 2));
 
         // Llamamos al servicio para crear la orden y obtenemos el id
         const orderId = await orderService.createOrder(orderData);

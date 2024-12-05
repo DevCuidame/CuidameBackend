@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const orderController = require('../controllers/order.controller');
+const orderController = require('../../controllers/relative/order.controller');
 
 router.post('/', orderController.createOrder); // Crear una orden
 router.get('/:id', orderController.getOrder); // Obtener una orden por ID
