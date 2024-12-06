@@ -60,10 +60,8 @@ const diseaseRoutes = require("../Cuidame/patient/routes/relative/disease.routes
 const relativeRoutes = require("../Cuidame/patient/routes/relative/relative.routes")
 const relativesAntecedentRoutes = require("../Cuidame/patient/routes/relative/relativesAntecedent.routes")
 const vaccineRoutes = require("../Cuidame/patient/routes/relative/vaccine.routes")
-
-// Medicine Control
-const medicineControl = require("../Cuidame/medicineControl/routes/oreder.routes")
-const imageMedicineControl = require("../Cuidame/medicineControl/routes/imagesOrder.routes")
+const medicineControl = require("../Cuidame/patient/routes/relative/oreder.routes")
+const imageMedicineControl = require("../Cuidame/patient/routes/relative/imagesOrder.routes")
 
 function routerApi(app) {
   const router = express.Router();
