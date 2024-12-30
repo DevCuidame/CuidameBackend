@@ -3,7 +3,6 @@ const imageService = require('../../services/relative/imagesOrder.service');
 exports.uploadImage = async (req, res) => {
   try {
     const imageData = req.body;
-    console.log( imageData );
     const savedImage = await imageService.saveImage(imageData);
 
     // Respondemos con la información de la imagen guardada

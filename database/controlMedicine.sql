@@ -31,5 +31,5 @@ CREATE TABLE imagesmedicine (
 	id_order INT NOT NULL,                -- ID de la orden de medicamentos
     created_at TIMESTAMP DEFAULT NOW(),   -- Fecha de creación
 
-    FOREIGN KEY (id_order) REFERENCES controlmedicine(id) ON DELETE CASCADE
+    FOREIGN KEY (id_order) REFERENCES controlMedicines(id) ON DELETE CASCADE
 );

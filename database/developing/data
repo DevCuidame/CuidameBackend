@@ -220,3 +220,6 @@ LEFT JOIN
     antecedentes_personales_agg apa ON apa.paciente_id = p.id
 LEFT JOIN 
     alergias_agg ala ON ala.paciente_id = p.id;
+
+
+\copy codes TO '/home/alopez/exported_codes.csv' WITH (FORMAT CSV, HEADER);
