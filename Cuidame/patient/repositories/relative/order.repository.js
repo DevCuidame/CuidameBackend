@@ -48,7 +48,38 @@ exports.createOrder = async (orderData) => {
 
 // Obtener una orden por ID
 exports.getOrderById = async (id) => {
-  const query = 'SELECT * FROM controlmedicine WHERE id = $1';
+  const query = 'SELECT * FROM controlmedicines WHERE id = $1';
+  const result = await pool.query(query, [id]);
+  if (!result.rows.length) return null;
+
+  const order = result.rows[0];
+  return new Order(
+    order.id,
+    order.medicament_name,
+    order.date_order,
+    order.duration,
+    order.dose,
+    order.frequency,
+    order.quantity,
+    order.authorized,
+    order.mipres,
+    order.controlled_substances,
+    order.eps_authorization,
+    order.pharmacy,
+    order.date_auth,
+    order.phone,
+    order.address,
+    order.description,
+    order.delivery_status,
+    order.delivery_date,
+    order.comments,
+    orderData.idPatient
+  );
+};
+
+// Obtener una orden por ID del paciente
+exports.getOrderByIdPatient = async (id) => {
+  const query = 'SELECT * FROM controlmedicines WHERE id = $1';
   const result = await pool.query(query, [id]);
   if (!result.rows.length) return null;
 
@@ -79,8 +110,9 @@ exports.getOrderById = async (id) => {
 
 // Obtener todas las órdenes
 exports.getAllOrders = async () => {
-  const query = 'SELECT * FROM controlmedicine';
+  const query = 'SELECT * FROM controlmedicines';
   const result = await pool.query(query);
+  console.log(result.rows);
   if (!result.rows.length) return null;
 
   return result.rows.map(order => new Order(
@@ -115,7 +147,7 @@ exports.updateOrder = async (id, orderData) => {
 
   const values = Object.values(orderData);
   const query = `
-    UPDATE controlmedicine
+    UPDATE controlmedicines
     SET ${columns}
     WHERE id = $1
     RETURNING *;
@@ -128,6 +160,6 @@ exports.updateOrder = async (id, orderData) => {
 
 // Eliminar una orden
 exports.deleteOrder = async (id) => {
-  const query = 'DELETE FROM controlmedicine WHERE id = $1';
+  const query = 'DELETE FROM controlmedicines WHERE id = $1';
   await pool.query(query, [id]);
 };

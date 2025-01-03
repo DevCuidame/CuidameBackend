@@ -8,6 +8,10 @@ exports.getOrder = async (id) => {
   return orderRepository.getOrderById(id);
 };
 
+exports.getOrderByIdPatient = async (id) => {
+  return orderRepository.getOrderByIdPatient(id);
+};
+
 exports.updateOrder = async (id, orderData) => {
   return orderRepository.updateOrder(id, orderData);
 };

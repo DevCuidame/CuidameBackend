@@ -38,6 +38,29 @@ exports.getOrder = async (req, res) => {
     }
 };
 
+exports.getOrderByIdPatient = async (req, res) => {
+    try {
+        const idPatient = req.params.id;
+        const order = await orderService.getOrderByIdPatient(idPatient);
+        if (!order) {
+        return res.status(404).json({
+            message: "Orden no encontrada",
+            success: false,
+        });
+        }
+        return res.status(200).json({
+        order,
+        success: true,
+        });
+    } catch (error) {
+        return res.status(400).json({
+        message: "Error al obtener la orden",
+        error: error.message,
+        success: false,
+        });
+    }
+};
+
 exports.updateOrder = async (req, res) => {
     try {
         const id = req.params.id; 
@@ -62,7 +85,6 @@ exports.updateOrder = async (req, res) => {
     }
 };
   
-
 exports.deleteOrder = async (req, res) => {
     try {
         const idOrder = req.params.id;

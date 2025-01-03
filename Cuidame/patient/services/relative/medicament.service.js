@@ -12,7 +12,6 @@ exports.getMedicamentByRelative = async (id) => {
   return medicamentRepository.getMedicamentByRelative(id);
 };
 
-
 exports.getAllMedicaments = async () => {
   return medicamentRepository.getAllMedicaments();
 };
